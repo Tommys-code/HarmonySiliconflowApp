@@ -1,0 +1,24 @@
+{
+  "string": [
+    {
+      "name": "module_desc",
+      "value": "module description"
+    },
+    {
+      "name": "EntryAbility_desc",
+      "value": "description"
+    },
+    {
+      "name": "EntryAbility_label",
+      "value": "label"
+    },
+    {
+      "name": "add_key_title",
+      "value": "添加SiliconCloud-API密钥"
+    },
+    {
+      "name": "add_key_hilt",
+      "value": "请输入API密钥"
+    }
+  ]
+}

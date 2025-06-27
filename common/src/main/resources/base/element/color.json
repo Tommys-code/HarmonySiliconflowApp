@@ -3,6 +3,14 @@
     {
       "name": "background_l1",
       "value": "#F2F2F2"
+    },
+    {
+      "name": "inverse_background",
+      "value": "#161616"
+    },
+    {
+      "name": "inverse_background_half_trans",
+      "value": "#99161616"
     }
   ]
 }

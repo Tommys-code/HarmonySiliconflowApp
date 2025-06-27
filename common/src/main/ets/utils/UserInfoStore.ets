@@ -16,6 +16,15 @@ class UserInfoStore {
     }
   }
 
+  async login(apikey: string) {
+    const userInfoModel = await SiliconFlowService.getUserInfo(apikey)
+    if (userInfoModel.data) {
+      await apikeyStore.saveApiKey(apikey)
+      this.userInfo = userInfoModel.data
+    }
+    return userInfoModel.data
+  }
+
   public static getInstance(): UserInfoStore {
     if (!UserInfoStore.instance) {
       UserInfoStore.instance = new UserInfoStore();

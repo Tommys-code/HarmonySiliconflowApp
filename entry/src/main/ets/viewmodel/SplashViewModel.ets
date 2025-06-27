@@ -1,8 +1,8 @@
-import { SFRoute, userInfoStore } from "common";
+import { userInfoStore } from "common";
 
 @ObservedV2
 export default class SplashViewModel {
-  @Trace nextPage?: string = undefined
+  @Trace isLogin?: boolean = undefined
 
   constructor() {
     this.init()
@@ -18,9 +18,9 @@ export default class SplashViewModel {
       userInfoStore.getUserInfo()
     ])
     if (userInfoStore.userInfo) {
-      this.nextPage = SFRoute.MAIN
+      this.isLogin = true
     } else {
-      this.nextPage = SFRoute.LOGIN
+      this.isLogin = false
     }
   }
 }

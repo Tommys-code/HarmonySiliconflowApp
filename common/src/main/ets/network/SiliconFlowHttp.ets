@@ -26,7 +26,9 @@ class SiliconFlowHttp {
     const httpInstance = http.createHttp()
 
     const options: http.HttpRequestOptions = {
-      header: header,
+      header: {
+        'Content-Type': 'application/json'
+      },
       method,
       expectDataType: http.HttpDataType.OBJECT
     }
@@ -50,9 +52,13 @@ class SiliconFlowHttp {
       options.extraData = extraData
     }
     return await httpInstance.request(fullUrl, options).then((res) => {
-      return Promise.reject(res.result as T)
+      if (res.responseCode == 200) {
+        return Promise.resolve(res.result as T)
+      } else {
+        throw new Error(res.result.toString())
+      }
     }).catch((err: BusinessError) => {
-      logger.error(fullUrl, err.code?.toString(), err.message)
+      logger.error(fullUrl, err.message)
       promptAction.showToast({ message: err.message || '网络错误' })
       return Promise.reject(err)
     }).finally(() => {

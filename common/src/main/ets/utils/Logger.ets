@@ -1,7 +1,7 @@
 import hilog from '@ohos.hilog'
 
 const DOMAIN = 0xFF09
-const PREFIX = 'PASS_INTERVIEW_LOGGER'
+const PREFIX = 'Logger'
 const FORMAT = '%{public}s, %{public}s'
 
 class Logger {

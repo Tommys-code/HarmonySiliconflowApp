@@ -1,6 +1,18 @@
 {
   "color": [
     {
+      "name": "transparent",
+      "value": "#00000000"
+    },
+    {
+      "name": "icon",
+      "value": "#000000"
+    },
+    {
+      "name": "icon_container",
+      "value": "#FFFFFF"
+    },
+    {
       "name": "background_l1",
       "value": "#F2F2F2"
     },
@@ -11,6 +23,10 @@
     {
       "name": "inverse_background_half_trans",
       "value": "#99161616"
+    },
+    {
+      "name": "outline_variant",
+      "value": "#CAC4D0"
     }
   ]
 }

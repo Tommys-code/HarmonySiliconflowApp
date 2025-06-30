@@ -1,8 +1,8 @@
 export { logger } from './src/main/ets/utils/Logger';
 
-export { apikeyStore } from './src/main/ets/utils/ApikeyStore';
+export { apikeyStore } from './src/main/ets/datastore/ApikeyStore';
 
-export { userInfoStore } from './src/main/ets/utils/UserInfoStore';
+export { userInfoStore } from './src/main/ets/datastore/UserInfoStore';
 
 export { sfHttp } from './src/main/ets/network/SiliconFlowHttp';
 
@@ -15,3 +15,7 @@ export { TextStyleModifier, Style } from './src/main/ets/extend/Text'
 export { ResourceType, Success, Loading, Failed } from './src/main/ets/models/Resource'
 
 export { LoadingDialog } from './src/main/ets/view/LoadingDialog'
+
+export { Role } from './src/main/ets/models/Role'
+
+export { DeltaModel } from './src/main/ets/models/ChatResponseModel'

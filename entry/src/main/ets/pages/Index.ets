@@ -23,5 +23,6 @@ struct Index {
         Splash()
       }
     }.mode(NavigationMode.Stack)
+    .hideTitleBar(true)
   }
 }

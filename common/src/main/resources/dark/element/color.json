@@ -1,6 +1,14 @@
 {
   "color": [
     {
+      "name": "icon",
+      "value": "#FFFFFF"
+    },
+    {
+      "name": "icon_container",
+      "value": "#000000"
+    },
+    {
       "name": "background_l1",
       "value": "#222222"
     },
@@ -11,6 +19,10 @@
     {
       "name": "inverse_background_half_trans",
       "value": "#99F2F2F2"
+    },
+    {
+      "name": "outline_variant",
+      "value": "#49454F"
     }
   ]
 }

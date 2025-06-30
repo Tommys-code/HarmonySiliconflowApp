@@ -7,6 +7,10 @@
     {
       "name": "confirm",
       "value": "确定"
+    },
+    {
+      "name": "enter_question",
+      "value": "请输入问题"
     }
   ]
 }

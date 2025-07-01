@@ -1,15 +1,18 @@
 import { preferences } from "@kit.ArkData"
+import { AbilityContext } from "../utils/AbilityContext";
+import { hilog } from "@kit.PerformanceAnalysisKit";
 
 export const API_KET_FILE: string = "apiKey"
 
 const API_KEY_NAME = "api_key"
 
-class ApikeyStore {
+export class ApikeyStore {
   private static instance: ApikeyStore;
   store: preferences.Preferences
 
   private constructor() {
-    this.store = preferences.getPreferencesSync(getContext(), { name: API_KET_FILE })
+    hilog.info(0x0000, 'testTag', '%{public}s', 'ApikeyStore');
+    this.store = preferences.getPreferencesSync(AbilityContext.getAbilityContext(), { name: API_KET_FILE })
     const apiKey = this.store.getSync(API_KEY_NAME, null)
     if (apiKey) {
       AppStorage.setOrCreate(API_KEY_NAME, apiKey)
@@ -33,5 +36,3 @@ class ApikeyStore {
     return ApikeyStore.instance;
   }
 }
-
-export const apikeyStore = ApikeyStore.getInstance()

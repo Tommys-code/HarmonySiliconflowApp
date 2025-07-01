@@ -25,5 +25,3 @@ class SettingDataStore {
     await this.store.flush()
   }
 }
-
-export const settingStore = new SettingDataStore()

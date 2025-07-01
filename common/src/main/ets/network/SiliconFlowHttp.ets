@@ -1,10 +1,9 @@
 import { BusinessError } from "@ohos.base";
 import { promptAction } from "@kit.ArkUI";
 import { logger } from "../utils/Logger";
-import { settingStore } from "../datastore/SettingDataStore";
 import { http } from "@kit.NetworkKit";
 import { JSON, util } from "@kit.ArkTS";
-import { ChatResponseModel } from "../models/ChatResponseModel";
+import { ApikeyStore } from "../../../../Index";
 
 interface SFRequestOptions {
   baseURL?: string
@@ -37,7 +36,7 @@ class SiliconFlowHttp {
     if (header) {
       header(options)
     }
-    const apiKey = settingStore.getApiKey()
+    const apiKey = ApikeyStore.getInstance().getApiKey()
     if (apiKey && options.header) {
       options.header['Authorization'] = `Bearer ${apiKey}`
     }

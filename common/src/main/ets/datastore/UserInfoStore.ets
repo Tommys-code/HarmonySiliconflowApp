@@ -1,7 +1,7 @@
-import { apikeyStore, SiliconFlowService } from '../../../../Index'
+import { ApikeyStore, SiliconFlowService } from '../../../../Index'
 import { UserInfo } from '../models/UserInfoModel'
 
-class UserInfoStore {
+export class UserInfoStore {
   private static instance: UserInfoStore
   userInfo?: UserInfo
 
@@ -9,7 +9,7 @@ class UserInfoStore {
   }
 
   async getUserInfo() {
-    const apiKey = apikeyStore.getApiKey()
+    const apiKey = ApikeyStore.getInstance().getApiKey()
     if (apiKey) {
       const userInfoModel = await SiliconFlowService.getUserInfo(apiKey)
       this.userInfo = userInfoModel.data
@@ -19,7 +19,7 @@ class UserInfoStore {
   async login(apikey: string) {
     const userInfoModel = await SiliconFlowService.getUserInfo(apikey)
     if (userInfoModel.data) {
-      await apikeyStore.saveApiKey(apikey)
+      await ApikeyStore.getInstance().saveApiKey(apikey)
       this.userInfo = userInfoModel.data
     }
     return userInfoModel.data
@@ -32,5 +32,3 @@ class UserInfoStore {
     return UserInfoStore.instance;
   }
 }
-
-export const userInfoStore = UserInfoStore.getInstance()

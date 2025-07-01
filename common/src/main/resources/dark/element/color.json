@@ -1,6 +1,10 @@
 {
   "color": [
     {
+      "name": "container",
+      "value": "#333333"
+    },
+    {
       "name": "icon",
       "value": "#FFFFFF"
     },

@@ -1,9 +1,10 @@
-import { ChatRepository } from '../repository/ChatRepository';
+import { ChatViewModel } from './ChatViewModel';
 
 @ObservedV2
-export default class MainViewModel extends ChatRepository {
+export default class MainViewModel extends ChatViewModel {
   @Trace showSideBar: boolean = false;
   @Trace question: string = ''
+
   toggleDrawer = () => {
     this.showSideBar = !this.showSideBar
   }
@@ -15,4 +16,5 @@ export default class MainViewModel extends ChatRepository {
   sendData() {
     super.sendData(this.question)
   }
+
 }

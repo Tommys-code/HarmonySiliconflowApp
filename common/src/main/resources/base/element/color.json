@@ -5,6 +5,10 @@
       "value": "#00000000"
     },
     {
+      "name": "container",
+      "value": "#E7E7E7"
+    },
+    {
       "name": "icon",
       "value": "#000000"
     },

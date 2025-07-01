@@ -1,7 +1,8 @@
-import { userInfoStore } from "common";
+import { UserInfoStore } from "common";
 
 @ObservedV2
 export default class SplashViewModel {
+  private userInfoStore = UserInfoStore.getInstance()
   @Trace isLogin?: boolean = undefined
 
   constructor() {
@@ -15,9 +16,9 @@ export default class SplashViewModel {
           resolve();
         }, 1000);
       }),
-      userInfoStore.getUserInfo()
+      this.userInfoStore.getUserInfo()
     ])
-    if (userInfoStore.userInfo) {
+    if (this.userInfoStore.userInfo) {
       this.isLogin = true
     } else {
       this.isLogin = false

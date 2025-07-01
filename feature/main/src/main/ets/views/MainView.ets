@@ -1,6 +1,7 @@
 import MainViewModel from '../viewmodel/MainViewModel';
 import { HomeTopAppBar } from './HomeTopAppBar'
 import { inputMethod } from '@kit.IMEKit';
+import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao';
 
 @ComponentV2
 export struct MainView {
@@ -48,13 +49,12 @@ export struct MainView {
   @Builder
   ChatList() {
     Column() {
-      if (this.mainViewModel.answer.result) {
-        Text(
-          this.mainViewModel.answer.result.content
-        )
-        Text(
-          this.mainViewModel.answer.result.reasoning_content
-        )
+      List() {
+        ForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
+          ListItem(){
+            Text(item.sendContent)
+          }
+        })
       }
     }.layoutWeight(1)
   }

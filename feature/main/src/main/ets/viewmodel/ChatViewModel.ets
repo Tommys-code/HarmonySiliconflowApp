@@ -6,7 +6,7 @@ import { ChatResult, Finish, Start, Progress } from '../model/ChatResult'
 @ObservedV2
 export class ChatViewModel {
   private userInfoStore = UserInfoStore.getInstance()
-  private appDataBase = AppDataBase.getInstance()
+  private appDataBase = AppDataBase.getInstance()!!
   @Trace answer: ChatResult<DeltaModel> = Finish.INSTANCE
   @Trace sessionList: Session[] = []
   @Trace currentSessionID?: number
@@ -21,7 +21,7 @@ export class ChatViewModel {
 
   constructor() {
     if (this.userInfoStore.userInfo !== undefined) {
-      this.appDataBase?.sessionDao?.onDataChange(this.userInfoStore.userInfo?.id, (data) => {
+      this.appDataBase.sessionDao.onDataChange(this.userInfoStore.userInfo?.id, (data) => {
         this.sessionList = data
         if (this.currentSessionID === undefined) {
           this.currentSessionID = data[0].id
@@ -32,7 +32,7 @@ export class ChatViewModel {
 
   private onChatHistory(sessionID?: number) {
     if (sessionID) {
-      this.appDataBase?.chatHistoryDao.onDataChange(sessionID, (data) => {
+      this.appDataBase.chatHistoryDao.onDataChange(sessionID, (data) => {
         this.chatHistory = data
       })
     } else {
@@ -41,19 +41,20 @@ export class ChatViewModel {
   }
 
   sendData(data: string) {
-    this.insertSendData(data)
-    // this.answer = Start.INSTANCE
-    // SiliconFlowService.chat(
-    //   [
-    //     { role: Role.USER, content: data }
-    //   ],
-    //   (data) => {
-    //     this.dataAppend(data.choices[0]?.delta)
-    //   },
-    //   () => {
-    //     this.finish()
-    //   }
-    // )
+    this.insertSendData(data).then((chatID) => {
+      this.answer = Start.INSTANCE
+      SiliconFlowService.chat(
+        [
+          { role: Role.USER, content: data }
+        ],
+        (data) => {
+          this.dataAppend(data.choices[0]?.delta)
+        },
+        () => {
+          this.finish(chatID)
+        }
+      )
+    })
   }
 
   private dataAppend(data: DeltaModel) {
@@ -79,27 +80,27 @@ export class ChatViewModel {
     }
   }
 
-  private finish() {
-    if (this.answer instanceof Progress) {
-
+  private finish(chatID?: number) {
+    if (this.answer instanceof Progress && chatID) {
+      this.appDataBase.chatHistoryDao.updateChatHistory(chatID, this.answer.data)
     }
     this.answer = Finish.INSTANCE
   }
 
   private async insertSendData(data: string) {
     const sessionID =
-      this.currentSessionID ?? await this.appDataBase?.sessionDao?.insert(data, this.userInfoStore.userInfo?.id)
+      this.currentSessionID ?? await this.appDataBase.sessionDao.insert(data, this.userInfoStore.userInfo?.id)
     const history: ChatHistory = {
       id: -1,
       sessionId: sessionID ?? -1,
       sendContent: data,
       sendRole: Role.USER,
     }
-    this.appDataBase?.chatHistoryDao?.insert(history)
     this.currentSessionID = sessionID
+    return await this.appDataBase.chatHistoryDao.insert(history)
   }
 
   destory() {
-    this.appDataBase?.sessionDao?.offDataChange()
+    this.appDataBase.sessionDao.offDataChange()
   }
 }

@@ -4,7 +4,6 @@ import { ChatViewModel } from './ChatViewModel';
 export default class MainViewModel extends ChatViewModel {
   @Trace showSideBar: boolean = false;
   @Trace question: string = ''
-
   toggleDrawer = () => {
     this.showSideBar = !this.showSideBar
   }
@@ -15,6 +14,6 @@ export default class MainViewModel extends ChatViewModel {
 
   sendData() {
     super.sendData(this.question)
+    this.question = ''
   }
-
 }

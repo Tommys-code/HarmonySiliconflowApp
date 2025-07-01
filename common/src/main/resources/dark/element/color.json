@@ -1,6 +1,10 @@
 {
   "color": [
     {
+      "name": "background",
+      "value": "#101010"
+    },
+    {
       "name": "container",
       "value": "#333333"
     },

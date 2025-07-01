@@ -12,7 +12,7 @@ export struct Main {
       DrawerContent({ mainViewModel: this.mainViewModel, })
         .width('100%')
         .height('100%')
-        .backgroundColor($r('[common].color.container'))
+        .backgroundColor($r('[common].color.background'))
       MainView({ mainViewModel: this.mainViewModel, })
         .height('100%')
         .width('100%')

@@ -3,6 +3,7 @@ import { relationalStore } from "@kit.ArkData";
 import { Role } from "../models/Role";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { logger } from "../utils/Logger";
+import { DeltaModel } from "../models/ChatResponseModel";
 
 export class ChatHistoryDao extends BaseDao {
   tableName: string = 'ChatHistory'
@@ -71,6 +72,19 @@ export class ChatHistoryDao extends BaseDao {
       resultSet.close()
     }
     return result
+  }
+
+  async updateChatHistory(id: number, model: DeltaModel) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    predicates.equalTo('ID', id)
+    if (this.store !== undefined) {
+      const data: relationalStore.ValuesBucket = {
+        receive_content: model.content ?? null,
+        receive_role: model.role ?? null,
+        thinking: model.reasoning_content ?? null,
+      }
+      this.store.update(data, predicates)
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import { describe, beforeAll, beforeEach, afterEach, afterAll, it, expect } from '@ohos/hypium';
+import { logger } from 'common';
 
 export default function localUnitTest() {
   describe('localUnitTest', () => {
@@ -30,4 +31,14 @@ export default function localUnitTest() {
       expect(a).assertEqual(a);
     });
   });
+
+  describe('test',()=>{
+    it("assertContain", 0, () => {
+        let data = 'data: {"id":"0197c49d02bdb0322c5c7400faa12267","object":"chat.completion.chunk","created":1751350313,"model":"Qwen/Qwen3-8B","choices":[{"index":0,"delta":{"content":" id","reasoning_content":null,"role":"assistant"},"finish_reason":null}],"system_fingerprint":"","usage":{"prompt_tokens":9,"completion_tokens":339,"total_tokens":348,"completion_tokens_details":{"reasoning_tokens":237}}}\n' +
+          '\n' +
+          'data: {"id":"0197c49d02bdb0322c5c7400faa12267","object":"chat.completion.chunk","created":1751350313,"model":"Qwen/Qwen3-8B","choices":[{"index":0,"delta":{"content":" is","reasoning_content":null,"role":"assistant"},"finish_reason":null}],"system_fingerprint":"","usage":{"prompt_tokens":9,"completion_tokens":340,"total_tokens":349,"completion_tokens_details":{"reasoning_tokens":237}}}\n'
+        let value = data.split('data:')
+        logger.debug(value.length.toString())
+    })
+  })
 }

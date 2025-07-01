@@ -24,13 +24,15 @@ class SiliconFlowHttp {
     method: http.RequestMethod = http.RequestMethod.GET,
     extraData?: Object,
     header?: (arg: http.HttpRequestOptions) => void,
+    readTimeout?: number,
   ): [http.HttpRequestOptions, string] {
     const options: http.HttpRequestOptions = {
       header: {
         'Content-Type': 'application/json'
       },
       method,
-      expectDataType: http.HttpDataType.OBJECT
+      expectDataType: http.HttpDataType.OBJECT,
+      readTimeout: readTimeout
     }
     let fullUrl = this.baseURL + path
     if (header) {
@@ -85,25 +87,16 @@ class SiliconFlowHttp {
     finish?: () => void,
   ) {
     const httpInstance = http.createHttp()
-    let data = this.createHttpRequestOptions(path, http.RequestMethod.POST, extraData)
+    let data = this.createHttpRequestOptions(path, http.RequestMethod.POST, extraData, undefined, 0)
     let options = data[0]
     let fullUrl = data[1]
     httpInstance.on('dataReceive', (data: ArrayBuffer) => {
       const chunk = this.decoder.decodeToString(new Uint8Array(data))
-      const value = this.processChunk(chunk)
-      if (value) {
-        if (value == "[DONE]") {
-          if (finish) {
-            finish()
-          }
-          httpInstance.off('dataReceive')
-          httpInstance.destroy()
-        } else {
-          if (progress) {
-            progress(JSON.parse(value) as T)
-          }
-        }
-      }
+      this.processChunk(chunk, () => {
+        httpInstance.off('dataReceive')
+        httpInstance.destroy()
+        finish?.()
+      }, progress)
     })
     httpInstance.requestInStream(fullUrl, options).catch((err: BusinessError) => {
       logger.error(fullUrl, err.message)
@@ -115,12 +108,26 @@ class SiliconFlowHttp {
     })
   }
 
-  private processChunk(chuck: string) {
-    if (chuck.startsWith('data:')) {
-      const data = chuck.slice(5).trim()
-      return data
-    } else {
-      return undefined
+  private processChunk<T>(
+    chuck: string,
+    finish: () => void,
+    progress?: (data: T) => void,
+  ) {
+    const data = chuck.split('data:').filter(item => item.trim().length > 0)
+    for (let i = 0; i < data.length; i++) {
+      const line = data[i].trim()
+      if (line === '[DONE]') {
+        finish()
+        return
+      }
+      if (progress) {
+        try {
+          progress(JSON.parse(line) as T)
+        } catch (e) {
+          logger.error(line)
+          logger.error(e)
+        }
+      }
     }
   }
 

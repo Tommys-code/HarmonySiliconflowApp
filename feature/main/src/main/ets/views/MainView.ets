@@ -6,6 +6,12 @@ import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao';
 @ComponentV2
 export struct MainView {
   @Param mainViewModel: MainViewModel = new MainViewModel()
+  scroller: Scroller = new Scroller()
+
+  @Monitor("mainViewModel.chatHistory")
+  loginStateChange() {
+    this.scroller.scrollEdge(Edge.Bottom)
+  }
 
   @Builder
   ChatView() {
@@ -48,15 +54,45 @@ export struct MainView {
 
   @Builder
   ChatList() {
-    Column() {
-      List() {
-        ForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
-          ListItem(){
-            Text(item.sendContent)
+    List({ initialIndex: this.mainViewModel.chatHistory.length - 1, scroller: this.scroller }) {
+      ForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
+        ListItem() {
+          Column() {
+            if (item.sendContent) {
+              this.SendChat(item.sendContent)
+            }
+            if (item.thinking) {
+              Text(
+                item.thinking
+              ).width('100%')
+            }
+            if (item.receiveContent) {
+              Text(
+                item.receiveContent
+              ).width('100%')
+            }
           }
-        })
-      }
+        }.padding({ left: 16, right: 16 })
+      })
     }.layoutWeight(1)
+    .scrollBar(BarState.Off)
+    .width('100%')
+  }
+
+  @Builder
+  SendChat(text: string) {
+    Stack({ alignContent: Alignment.End }) {
+      Text(text)
+        .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 12 })
+        .padding({
+          left: 20,
+          right: 20,
+          top: 8,
+          bottom: 8
+        })
+        .margin({ bottom: 10 })
+        .backgroundColor($r('[common].color.container'))
+    }.width('100%')
   }
 
   build() {

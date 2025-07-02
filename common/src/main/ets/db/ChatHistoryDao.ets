@@ -4,6 +4,7 @@ import { Role } from "../models/Role";
 import { BusinessError } from "@kit.BasicServicesKit";
 import { logger } from "../utils/Logger";
 import { DeltaModel } from "../models/ChatResponseModel";
+import { util } from "@kit.ArkTS";
 
 export class ChatHistoryDao extends BaseDao {
   tableName: string = 'ChatHistory'
@@ -96,5 +97,9 @@ export interface ChatHistory {
   receiveContent?: string
   receiveRole?: Role
   thinking?: string
+}
+
+export function getChatHistoryKey(chatHistory: ChatHistory): string {
+  return util.getHash(chatHistory).toString()
 }
 

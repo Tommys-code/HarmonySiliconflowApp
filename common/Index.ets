@@ -16,6 +16,8 @@ export { ResourceType, Success, Loading, Failed } from './src/main/ets/models/Re
 
 export { LoadingDialog } from './src/main/ets/view/LoadingDialog'
 
+export { ThreeDotLoading } from './src/main/ets/view/ThreeDotLoading'
+
 export { Role } from './src/main/ets/models/Role'
 
 export { DeltaModel } from './src/main/ets/models/ChatResponseModel'
@@ -23,3 +25,5 @@ export { DeltaModel } from './src/main/ets/models/ChatResponseModel'
 export { AppDataBase } from './src/main/ets/db/AppDataBase'
 
 export { AbilityContext } from './src/main/ets/utils/AbilityContext'
+
+export { ListDataSource, ListDataSourceDataChange } from './src/main/ets/utils/ListDataSource'

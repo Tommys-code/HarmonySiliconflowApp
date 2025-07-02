@@ -35,6 +35,10 @@
     {
       "name": "outline_variant",
       "value": "#CAC4D0"
+    },
+    {
+      "name": "secondary_text",
+      "value": "#7F7F7F"
     }
   ]
 }

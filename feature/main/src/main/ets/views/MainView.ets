@@ -1,15 +1,28 @@
 import MainViewModel from '../viewmodel/MainViewModel';
 import { HomeTopAppBar } from './HomeTopAppBar'
 import { inputMethod } from '@kit.IMEKit';
-import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao';
+import { ChatHistory, getChatHistoryKey } from 'common/src/main/ets/db/ChatHistoryDao';
+import { ListDataSourceDataChange } from 'common';
+import { Answer, Receive, Thinking } from './ChatItem';
 
 @ComponentV2
 export struct MainView {
   @Param mainViewModel: MainViewModel = new MainViewModel()
-  scroller: Scroller = new Scroller()
+  private dataChangeListener = new ListDataSourceDataChange(() => {
+    this.chatHistoryChange()
+  })
+  private scroller: Scroller = new Scroller()
 
-  @Monitor("mainViewModel.chatHistory")
-  loginStateChange() {
+  aboutToAppear(): void {
+    this.mainViewModel.chatHistory.registerDataChangeListener(this.dataChangeListener)
+  }
+
+  aboutToDisappear(): void {
+    this.mainViewModel.chatHistory.unregisterDataChangeListener(this.dataChangeListener)
+    this.mainViewModel.onCleared()
+  }
+
+  chatHistoryChange() {
     this.scroller.scrollEdge(Edge.Bottom)
   }
 
@@ -54,27 +67,23 @@ export struct MainView {
 
   @Builder
   ChatList() {
-    List({ initialIndex: this.mainViewModel.chatHistory.length - 1, scroller: this.scroller }) {
-      ForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
+    List({ scroller: this.scroller }) {
+      LazyForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
         ListItem() {
           Column() {
             if (item.sendContent) {
               this.SendChat(item.sendContent)
             }
-            if (item.thinking) {
-              Text(
-                item.thinking
-              ).width('100%')
-            }
-            if (item.receiveContent) {
-              Text(
-                item.receiveContent
-              ).width('100%')
-            }
+            Thinking({ data: item.thinking })
+            Receive({ data: item.receiveContent })
           }
-        }.padding({ left: 16, right: 16 })
-      })
+        }
+      }, (item: ChatHistory) => getChatHistoryKey(item))
+      ListItem() {
+        Answer({ data: this.mainViewModel.answer })
+      }
     }.layoutWeight(1)
+    .padding({ left: 16, right: 16 })
     .scrollBar(BarState.Off)
     .width('100%')
   }

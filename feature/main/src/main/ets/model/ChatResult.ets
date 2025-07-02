@@ -1,12 +1,14 @@
-export abstract class ChatResource<T> {
-  public result: T | null;
+import { DeltaModel } from "common";
 
-  constructor(result: T | null) {
+export abstract class ChatResource {
+  public result: DeltaModel | null;
+
+  constructor(result: DeltaModel | null) {
     this.result = result;
   }
 }
 
-export class Start extends ChatResource<null> {
+export class Start extends ChatResource {
   public static readonly INSTANCE = new Start();
 
   constructor() {
@@ -14,16 +16,16 @@ export class Start extends ChatResource<null> {
   }
 }
 
-export class Progress<T> extends ChatResource<T> {
-  public data: T;
+export class Progressing extends ChatResource {
+  public data: DeltaModel;
 
-  constructor(data: T) {
+  constructor(data: DeltaModel) {
     super(data);
     this.data = data;
   }
 }
 
-export class Finish extends ChatResource<null> {
+export class Finish extends ChatResource {
   public static readonly INSTANCE = new Finish();
 
   constructor() {
@@ -31,4 +33,12 @@ export class Finish extends ChatResource<null> {
   }
 }
 
-export type ChatResult<T> = Start | Progress<T> | Finish;
+export class Test extends ChatResource{
+  public data: DeltaModel;
+  constructor(data: DeltaModel) {
+    super(data);
+    this.data = data
+  }
+}
+
+export type ChatResult = Start | Progressing | Finish | Test;

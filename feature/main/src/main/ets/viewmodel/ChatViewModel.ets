@@ -1,19 +1,19 @@
-import { AppDataBase, DeltaModel, logger, Role, SiliconFlowService, UserInfoStore } from 'common'
+import { AppDataBase, DeltaModel, ListDataSource, Role, SiliconFlowService, UserInfoStore } from 'common'
 import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao'
 import { Session } from 'common/src/main/ets/db/SessionDao'
-import { ChatResult, Finish, Start, Progress } from '../model/ChatResult'
+import { ChatResult, Finish, Start, Progressing } from '../model/ChatResult'
 
 @ObservedV2
 export class ChatViewModel {
   private userInfoStore = UserInfoStore.getInstance()
   private appDataBase = AppDataBase.getInstance()!!
-  @Trace answer: ChatResult<DeltaModel> = Finish.INSTANCE
+  @Trace answer: ChatResult = Finish.INSTANCE
   @Trace sessionList: Session[] = []
   @Trace currentSessionID?: number
-  @Trace chatHistory: ChatHistory[] = []
+  chatHistory: ListDataSource<ChatHistory> = new ListDataSource()
 
   @Monitor("currentSessionID")
-  loginStateChange(monitor: IMonitor) {
+  currentSessionIDChange(monitor: IMonitor) {
     if (monitor.value()?.now != monitor.value()?.before) {
       this.onChatHistory(monitor.value<number>()?.now)
     }
@@ -33,10 +33,10 @@ export class ChatViewModel {
   private onChatHistory(sessionID?: number) {
     if (sessionID) {
       this.appDataBase.chatHistoryDao.onDataChange(sessionID, (data) => {
-        this.chatHistory = data
+        this.chatHistory.setNewData(data)
       })
     } else {
-      this.chatHistory = []
+      this.chatHistory.removeAllData()
     }
   }
 
@@ -57,8 +57,12 @@ export class ChatViewModel {
     })
   }
 
+  delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
   private dataAppend(data: DeltaModel) {
-    if (this.answer instanceof Progress) {
+    if (this.answer instanceof Progressing) {
       let prevData = this.answer.data
       let newContent = prevData.content ? data.content
         ? prevData.content + data.content
@@ -74,14 +78,14 @@ export class ChatViewModel {
         content: newContent,
         reasoning_content: newReasoningContent,
       }
-      this.answer = new Progress(newData)
+      this.answer = new Progressing(newData)
     } else {
-      this.answer = new Progress(data)
+      this.answer = new Progressing(data)
     }
   }
 
   private finish(chatID?: number) {
-    if (this.answer instanceof Progress && chatID) {
+    if (this.answer instanceof Progressing && chatID) {
       this.appDataBase.chatHistoryDao.updateChatHistory(chatID, this.answer.data)
     }
     this.answer = Finish.INSTANCE
@@ -100,7 +104,7 @@ export class ChatViewModel {
     return await this.appDataBase.chatHistoryDao.insert(history)
   }
 
-  destory() {
+  onCleared() {
     this.appDataBase.sessionDao.offDataChange()
   }
 }

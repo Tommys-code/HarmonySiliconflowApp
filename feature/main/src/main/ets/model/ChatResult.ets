@@ -33,12 +33,4 @@ export class Finish extends ChatResource {
   }
 }
 
-export class Test extends ChatResource{
-  public data: DeltaModel;
-  constructor(data: DeltaModel) {
-    super(data);
-    this.data = data
-  }
-}
-
-export type ChatResult = Start | Progressing | Finish | Test;
+export type ChatResult = Start | Progressing | Finish;

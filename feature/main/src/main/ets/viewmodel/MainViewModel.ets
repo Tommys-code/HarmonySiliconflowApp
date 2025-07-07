@@ -16,4 +16,9 @@ export default class MainViewModel extends ChatViewModel {
     super.sendData(this.question)
     this.question = ''
   }
+
+  newChat(sessionID?: number): void {
+    super.changeSession(sessionID)
+    this.hideDrawer()
+  }
 }

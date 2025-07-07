@@ -1,6 +1,6 @@
 import { MarkdownV2 } from "@lidary/markdown"
 import { Style, ThreeDotLoading } from "common"
-import { ChatResult, Finish, Progressing, Start, Test } from "../model/ChatResult"
+import { ChatResult, Finish, Progressing, Start } from "../model/ChatResult"
 
 @ComponentV2
 export struct Thinking {

@@ -19,7 +19,9 @@ export class SessionDao extends BaseDao {
   }
 
   onDataChange(useID: string, callback: (sessions: Session[]) => void) {
-    this.querySessions(useID).then((data) => {callback(data)})
+    this.querySessions(useID).then((data) => {
+      callback(data)
+    })
     super.onDataChangeDetail(async () => {
       callback(await this.querySessions(useID))
     })
@@ -41,7 +43,7 @@ export class SessionDao extends BaseDao {
   async querySessions(useID: string) {
     const predicates2 = new relationalStore.RdbPredicates(this.tableName);
     predicates2.equalTo('userID', useID)
-    predicates2.orderByAsc('updateTime')
+    predicates2.orderByDesc('updateTime')
     const result: Session[] = []
     if (this.store !== undefined) {
       const resultSet = await this.store.query(predicates2, ['ID', 'title'])
@@ -60,6 +62,5 @@ export class SessionDao extends BaseDao {
 
 export interface Session {
   id: number
-  title: string,
+  title: string
 }
-

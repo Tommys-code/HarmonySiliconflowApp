@@ -8,7 +8,7 @@ export class ChatViewModel {
   private userInfoStore = UserInfoStore.getInstance()
   private appDataBase = AppDataBase.getInstance()!!
   @Trace answer: ChatResult = Finish.INSTANCE
-  @Trace sessionList: Session[] = []
+  @Trace sessionList: Array<Session> = []
   @Trace currentSessionID?: number
   chatHistory: ListDataSource<ChatHistory> = new ListDataSource()
 
@@ -32,6 +32,7 @@ export class ChatViewModel {
 
   private onChatHistory(sessionID?: number) {
     if (sessionID) {
+      this.appDataBase.chatHistoryDao.offDataChange()
       this.appDataBase.chatHistoryDao.onDataChange(sessionID, (data) => {
         this.chatHistory.setNewData(data)
       })
@@ -57,8 +58,8 @@ export class ChatViewModel {
     })
   }
 
-  delay(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms));
+  changeSession(sessionID?: number) {
+    this.currentSessionID = sessionID
   }
 
   private dataAppend(data: DeltaModel) {

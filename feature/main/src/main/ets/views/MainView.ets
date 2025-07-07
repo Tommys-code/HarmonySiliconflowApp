@@ -13,6 +13,11 @@ export struct MainView {
   })
   private scroller: Scroller = new Scroller()
 
+  // @Monitor('mainViewModel.answer')
+  // onAnswerChange() {
+  //   this.chatHistoryChange
+  // }
+
   aboutToAppear(): void {
     this.mainViewModel.chatHistory.registerDataChangeListener(this.dataChangeListener)
   }

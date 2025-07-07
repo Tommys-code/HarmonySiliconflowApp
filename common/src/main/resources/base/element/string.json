@@ -5,12 +5,20 @@
       "value": "description"
     },
     {
+      "name": "title",
+      "value": "SiliconFlowAI"
+    },
+    {
       "name": "confirm",
       "value": "确定"
     },
     {
       "name": "enter_question",
       "value": "请输入问题"
+    },
+    {
+      "name": "create_new_session",
+      "value": "新建对话"
     }
   ]
 }

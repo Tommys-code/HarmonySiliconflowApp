@@ -79,9 +79,7 @@ export struct ChatItem {
   @Param @Once data?: ChatHistory = undefined
   @Param mainViewModel: MainViewModel = new MainViewModel()
   dialogController: CustomDialogController = new CustomDialogController({
-    builder: DeleteChatHistoryDialog2({
-      delete: this.delete.bind(this)
-    }),
+    builder: DeleteChatHistoryDialog2({ delete: this.delete.bind(this) }),
     customStyle: true
   })
 

@@ -18,7 +18,8 @@ export struct DeleteChatHistoryDialog2 {
       text: $r('[common].string.cancel'),
       click: () => {
         this.controller.close()
-      }
+      },
+      weight: 1
     })
     NormalButton({
       text: $r('[common].string.confirm'),
@@ -29,7 +30,8 @@ export struct DeleteChatHistoryDialog2 {
         if (this.delete) {
           this.delete()
         }
-      }
+      },
+      weight: 1
     })
   }
 

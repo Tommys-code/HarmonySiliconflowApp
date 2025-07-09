@@ -29,6 +29,10 @@
       "value": "删除"
     },
     {
+      "name": "finish",
+      "value": "完成"
+    },
+    {
       "name": "copy_success",
       "value": "已复制到剪贴板"
     },
@@ -51,6 +55,34 @@
     {
       "name": "delete_error",
       "value": "删除失败"
+    },
+    {
+      "name": "mul_select",
+      "value": "多选"
+    },
+    {
+      "name": "edit_session_name",
+      "value": "编辑名称"
+    },
+    {
+      "name": "edit_session_name_tips",
+      "value": "请输入对话名称"
+    },
+    {
+      "name": "edit_session_name_success",
+      "value": "修改成功"
+    },
+    {
+      "name": "edit_session_name_error",
+      "value": "修改失败"
+    },
+    {
+      "name": "select_all",
+      "value": "全选"
+    },
+    {
+      "name": "delete_with_num",
+      "value": "删除 (%d)"
     }
   ]
 }

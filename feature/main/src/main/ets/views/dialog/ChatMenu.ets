@@ -16,6 +16,7 @@ function MyMenu(image: ResourceStr, text: ResourceStr, event?: (event: ClickEven
       .margin({ right: 10 })
     Text(text)
   }
+  .width('100%')
   .padding({
     left: 8,
     right: 8,

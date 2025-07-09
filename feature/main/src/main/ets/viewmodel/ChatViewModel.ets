@@ -1,4 +1,4 @@
-import { AppDataBase, DeltaModel, ListDataSource, Role, SiliconFlowService, UserInfoStore } from 'common'
+import { AppDataBase, DeltaModel, ListDataSource, logger, Role, SiliconFlowService, UserInfoStore } from 'common'
 import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao'
 import { Session } from 'common/src/main/ets/db/SessionDao'
 import { ChatResult, Finish, Start, Progressing } from '../model/ChatResult'
@@ -37,7 +37,7 @@ export class ChatViewModel {
         this.chatHistory.setNewData(data)
       })
     } else {
-      this.chatHistory.removeAllData()
+      this.chatHistory.setNewData([])
     }
   }
 
@@ -93,6 +93,9 @@ export class ChatViewModel {
   }
 
   private async insertSendData(data: string) {
+    if (this.currentSessionID) {
+      this.appDataBase.sessionDao.updateSessionTime(this.currentSessionID)
+    }
     const sessionID =
       this.currentSessionID ?? await this.appDataBase.sessionDao.insert(data, this.userInfoStore.userInfo?.id)
     const history: ChatHistory = {
@@ -106,7 +109,13 @@ export class ChatViewModel {
   }
 
   async deleteChatHistory(chatHistory: ChatHistory) {
-    return await this.appDataBase.chatHistoryDao.deleteChatHistory(chatHistory.id)
+    const success = await this.appDataBase.chatHistoryDao.deleteChatHistory(chatHistory.id)
+    this.appDataBase.chatHistoryDao.getCountBySessionID(chatHistory.sessionId).then((count) => {
+      if (count === 0) {
+        this.appDataBase.sessionDao.deleteSession(chatHistory.sessionId)
+      }
+    })
+    return success
   }
 
   onCleared() {

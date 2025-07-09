@@ -1,10 +1,9 @@
 import { MarkdownV2 } from "@lidary/markdown"
-import { copyText, PromptActionClass, Style, ThreeDotLoading } from "common"
+import { copyText, Style, ThreeDotLoading } from "common"
 import { ChatHistory } from "common/src/main/ets/db/ChatHistoryDao"
 import { ChatResult, Finish, Progressing, Start } from "../model/ChatResult"
 import { ChatMenu, ChatMenuInterface } from "./dialog/ChatMenu"
-import { ComponentContent } from "@kit.ArkUI"
-import { DeleteChatHistoryDialog, MainDialogInterface } from "./dialog/MainDialog"
+import { DeleteChatHistoryDialog2, } from "./dialog/MainDialog"
 import MainViewModel from "../viewmodel/MainViewModel"
 
 @ComponentV2
@@ -77,30 +76,14 @@ struct Receive {
 
 @ComponentV2
 export struct ChatItem {
-  @Param data?: ChatHistory = undefined
+  @Param @Once data?: ChatHistory = undefined
   @Param mainViewModel: MainViewModel = new MainViewModel()
-  private contentNode: ComponentContent<Object> =
-    new ComponentContent(this.getUIContext(), wrapBuilder(DeleteChatHistoryDialog), {
-      action1: this.hideDeleteDialog,
-      action2: () => {
-        if (this.data) {
-          this.mainViewModel.deleteChatHistory(this.data).then((isSuccess) => {
-            if (isSuccess) {
-              this.showToast($r('[common].string.delete_success'))
-            } else {
-              this.showToast($r('[common].string.delete_error'))
-            }
-          })
-        }
-        this.hideDeleteDialog()
-      }
-    } as MainDialogInterface);
-
-  aboutToAppear(): void {
-    PromptActionClass.setContext(this.getUIContext());
-    PromptActionClass.setContentNode(this.contentNode);
-    PromptActionClass.setOptions({ alignment: DialogAlignment.Center, autoCancel: false });
-  }
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: DeleteChatHistoryDialog2({
+      delete: this.delete.bind(this)
+    }),
+    customStyle: true
+  })
 
   private copy(text?: string): void {
     if (text) {
@@ -110,15 +93,23 @@ export struct ChatItem {
   }
 
   private showDeleteDialog(): void {
-    PromptActionClass.openDialog()
-  }
-
-  private hideDeleteDialog(): void {
-    PromptActionClass.closeDialog()
+    this.dialogController.open()
   }
 
   private showToast(msg: string | Resource) {
     this.getUIContext().getPromptAction().showToast({ message: msg })
+  }
+
+  private delete(): void {
+    if (this.data) {
+      this.mainViewModel.deleteChatHistory(this.data).then((isSuccess) => {
+        if (isSuccess) {
+          this.showToast($r('[common].string.delete_success'))
+        } else {
+          this.showToast($r('[common].string.delete_error'))
+        }
+      })
+    }
   }
 
   build() {

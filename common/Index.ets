@@ -20,7 +20,7 @@ export { CommonDialog } from './src/main/ets/view/CommonDialog'
 
 export { ThreeDotLoading } from './src/main/ets/view/ThreeDotLoading'
 
-export { NormalButton, NormalButtonOptions } from './src/main/ets/view/NormalButton'
+export { NormalButton } from './src/main/ets/view/NormalButton'
 
 export { Role } from './src/main/ets/models/Role'
 

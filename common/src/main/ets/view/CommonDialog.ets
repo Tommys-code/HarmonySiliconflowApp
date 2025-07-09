@@ -1,11 +1,10 @@
 import { Style } from "../extend/Text"
-import { NormalButton, NormalButtonOptions } from "./NormalButton";
 
 @ComponentV2
 export struct CommonDialog {
   @Param title: string | Resource = '';
-  @Param buttons: NormalButtonOptions[] = []
-  @BuilderParam content: () => void;
+  @BuilderParam content: () => void
+  @BuilderParam buttons: () => void
 
   build() {
     Column() {
@@ -16,9 +15,7 @@ export struct CommonDialog {
         .padding({ top: 12, bottom: 12 })
       this.content()
       Row({ space: 12 }) {
-        ForEach(this.buttons, (options: NormalButtonOptions) => {
-          NormalButton({ buttonOptions: options }).layoutWeight(1)
-        })
+        this.buttons()
       }.width('100%')
       .padding({ top: 16, bottom: 16 })
     }.padding({ left: 16, right: 16 })

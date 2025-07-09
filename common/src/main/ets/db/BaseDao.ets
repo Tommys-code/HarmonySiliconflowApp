@@ -3,6 +3,7 @@ import { relationalStore } from '@kit.ArkData'
 export abstract class BaseDao {
   abstract tableName: string
   protected store?: relationalStore.RdbStore
+  private observer?: Callback<Array<string>> | Callback<Array<relationalStore.ChangeInfo>>
 
   constructor(store: relationalStore.RdbStore) {
     this.store = store;
@@ -13,22 +14,25 @@ export abstract class BaseDao {
 
   onDataChangeDetail(callback: () => void) {
     if (this.store != undefined) {
-      this.store.on('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_LOCAL_DETAILS,
-        async (changeInfo: Array<relationalStore.ChangeInfo>) => {
-          if (changeInfo.length > 0) {
-            for (let index = 0; index < changeInfo.length; index++) {
-              const table = changeInfo[index].table;
-              if (table === this.tableName) {
-                callback()
-                return
-              }
+      const observer = async (changeInfo: Array<relationalStore.ChangeInfo>) => {
+        if (changeInfo.length > 0) {
+          for (let index = 0; index < changeInfo.length; index++) {
+            const table = changeInfo[index].table;
+            if (table === this.tableName) {
+              callback()
+              return
             }
           }
-        })
+        }
+      }
+      this.observer = observer
+      this.store.on('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_LOCAL_DETAILS, observer)
     }
   }
 
   offDataChange() {
-    this.store?.off('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_LOCAL_DETAILS)
+    if (this.observer) {
+      this.store?.off('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_LOCAL_DETAILS, this.observer)
+    }
   }
 }

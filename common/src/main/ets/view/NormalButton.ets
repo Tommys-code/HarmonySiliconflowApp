@@ -1,62 +1,29 @@
 @ComponentV2
 export struct NormalButton {
-  @Param buttonOptions: NormalButtonOptions = new NormalButtonOptions()
+  @Param text: string | Resource = ''
+  @Param textColor: ResourceColor = $r('app.color.primary_text')
+  @Param radius: Length | BorderRadiuses | LocalizedBorderRadiuses = 10
+  @Param enable: boolean = true
+  @Param color: ResourceColor = $r('app.color.background_l1')
+  @Event click: () => void = () => {
+  }
 
   build() {
     Button({
       type: ButtonType.ROUNDED_RECTANGLE
     }) {
-      Text(this.buttonOptions.text)
+      Text(this.text)
         .padding({ top: 8, bottom: 8 })
-        .fontColor(this.buttonOptions.textColor)
+        .fontColor(this.textColor)
         .width('100%')
         .textAlign(TextAlign.Center)
     }
-    .borderRadius(this.buttonOptions.radius)
-    .enabled(this.buttonOptions.enable)
-    .backgroundColor(this.buttonOptions.color)
+    .borderRadius(this.radius)
+    .enabled(this.enable)
+    .backgroundColor(this.color)
     .layoutWeight(1)
-    .onClick(this.buttonOptions.click)
-  }
-}
-
-export class NormalButtonOptions {
-  text: string | Resource = ''
-  textColor: ResourceColor = $r('app.color.primary_text')
-  radius: Length | BorderRadiuses | LocalizedBorderRadiuses = 10
-  enable: boolean = true
-  color: ResourceColor = $r('app.color.background_l1')
-  click: () => void = () => {
-  }
-
-  setText(text: string | Resource): NormalButtonOptions {
-    this.text = text
-    return this
-  }
-
-  setTextColor(textColor: ResourceColor): NormalButtonOptions {
-    this.textColor = textColor
-    return this
-  }
-
-  setRadius(radius: Length | BorderRadiuses | LocalizedBorderRadiuses): NormalButtonOptions {
-    this.radius = radius
-    return this
-  }
-
-  isEnable(enable: boolean): NormalButtonOptions {
-    this.enable = enable
-    return this
-  }
-
-  setColor(color: ResourceColor): NormalButtonOptions {
-    this.color = color
-    return this
-  }
-
-  onClick(click?: () => void): NormalButtonOptions {
-    this.click = click ?? (() => {
+    .onClick(() => {
+      this.click()
     })
-    return this
   }
 }

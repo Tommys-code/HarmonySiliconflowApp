@@ -98,6 +98,20 @@ export class ChatHistoryDao extends BaseDao {
     }
     return result
   }
+
+  async getCountBySessionID(sessionID: number) {
+    if (this.store !== undefined) {
+      const sql = "SELECT COUNT(*) FROM ChatHistory WHERE sessionId = ?";
+      const resultSet = await this.store.querySql(sql, [sessionID])
+      let count = 0;
+      if (resultSet.goToFirstRow()) {
+        count = resultSet.getLong(0);
+      }
+      resultSet.close();
+      return count
+    }
+    return undefined
+  }
 }
 
 export interface ChatHistory {

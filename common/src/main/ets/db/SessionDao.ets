@@ -58,6 +58,28 @@ export class SessionDao extends BaseDao {
     }
     return result
   }
+
+  async deleteSession(sessionID: number) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    let result: boolean = false
+    predicates.equalTo('ID', sessionID)
+    if (this.store !== undefined) {
+      const num = await this.store.delete(predicates)
+      result = num >= 0
+    }
+    return result
+  }
+
+  async updateSessionTime(sessionID: number) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    predicates.equalTo('ID', sessionID)
+    if (this.store !== undefined) {
+      const data: relationalStore.ValuesBucket = {
+        updateTime: systemDateTime.getTime(true)
+      }
+      this.store.update(data, predicates)
+    }
+  }
 }
 
 export interface Session {

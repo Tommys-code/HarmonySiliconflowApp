@@ -87,6 +87,17 @@ export class ChatHistoryDao extends BaseDao {
       this.store.update(data, predicates)
     }
   }
+
+  async deleteChatHistory(id: number) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    let result: boolean = false
+    predicates.equalTo('ID', id)
+    if (this.store !== undefined) {
+      const num = await this.store.delete(predicates)
+      result = num >= 0
+    }
+    return result
+  }
 }
 
 export interface ChatHistory {

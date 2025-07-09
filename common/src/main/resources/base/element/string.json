@@ -19,6 +19,38 @@
     {
       "name": "create_new_session",
       "value": "新建对话"
+    },
+    {
+      "name": "copy",
+      "value": "复制"
+    },
+    {
+      "name": "delete",
+      "value": "删除"
+    },
+    {
+      "name": "copy_success",
+      "value": "已复制到剪贴板"
+    },
+    {
+      "name": "delete_dialog_title",
+      "value": "确认删除"
+    },
+    {
+      "name": "delete_chat_tips",
+      "value": "该操作会同时删除提问和回答，且内容删除后无法恢复"
+    },
+    {
+      "name": "cancel",
+      "value": "取消"
+    },
+    {
+      "name": "delete_success",
+      "value": "删除成功"
+    },
+    {
+      "name": "delete_error",
+      "value": "删除失败"
     }
   ]
 }

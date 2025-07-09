@@ -105,6 +105,10 @@ export class ChatViewModel {
     return await this.appDataBase.chatHistoryDao.insert(history)
   }
 
+  async deleteChatHistory(chatHistory: ChatHistory) {
+    return await this.appDataBase.chatHistoryDao.deleteChatHistory(chatHistory.id)
+  }
+
   onCleared() {
     this.appDataBase.sessionDao.offDataChange()
   }

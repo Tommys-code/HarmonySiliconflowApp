@@ -3,7 +3,7 @@ import { HomeTopAppBar } from './HomeTopAppBar'
 import { inputMethod } from '@kit.IMEKit';
 import { ChatHistory, getChatHistoryKey } from 'common/src/main/ets/db/ChatHistoryDao';
 import { ListDataSourceDataChange } from 'common';
-import { Answer, Receive, Thinking } from './ChatItem';
+import { Answer, ChatItem } from './ChatItem';
 
 @ComponentV2
 export struct MainView {
@@ -12,11 +12,12 @@ export struct MainView {
     this.chatHistoryChange()
   })
   private scroller: Scroller = new Scroller()
+  @Local canScrollDown: boolean = false
 
-  // @Monitor('mainViewModel.answer')
-  // onAnswerChange() {
-  //   this.chatHistoryChange
-  // }
+  @Monitor('mainViewModel.answer')
+  onAnswerChange() {
+    this.chatHistoryChange()
+  }
 
   aboutToAppear(): void {
     this.mainViewModel.chatHistory.registerDataChangeListener(this.dataChangeListener)
@@ -28,7 +29,9 @@ export struct MainView {
   }
 
   chatHistoryChange() {
-    this.scroller.scrollEdge(Edge.Bottom)
+    if (this.canScrollDown === false) {
+      this.scroller.scrollEdge(Edge.Bottom)
+    }
   }
 
   @Builder
@@ -57,6 +60,7 @@ export struct MainView {
       .enabled(this.mainViewModel.question.trim().length > 0)
       .onClick(() => {
         inputMethod.getController().stopInputSession()
+        this.scroller.scrollEdge(Edge.Bottom)
         this.mainViewModel.sendData()
       })
     }
@@ -72,41 +76,44 @@ export struct MainView {
 
   @Builder
   ChatList() {
-    List({ scroller: this.scroller }) {
-      LazyForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
-        ListItem() {
-          Column() {
-            if (item.sendContent) {
-              this.SendChat(item.sendContent)
-            }
-            Thinking({ data: item.thinking })
-            Receive({ data: item.receiveContent })
+    Stack({ alignContent: Alignment.Bottom }) {
+      List({ scroller: this.scroller }) {
+        LazyForEach(this.mainViewModel.chatHistory, (item: ChatHistory) => {
+          ListItem() {
+            ChatItem({ data: item, mainViewModel: this.mainViewModel })
           }
+        }, (item: ChatHistory) => getChatHistoryKey(item))
+        ListItem() {
+          Answer({ data: this.mainViewModel.answer })
         }
-      }, (item: ChatHistory) => getChatHistoryKey(item))
-      ListItem() {
-        Answer({ data: this.mainViewModel.answer })
       }
-    }.layoutWeight(1)
-    .padding({ left: 16, right: 16 })
-    .scrollBar(BarState.Off)
-    .width('100%')
-  }
+      .padding({ left: 16, right: 16 })
+      .scrollBar(BarState.Off)
+      .width('100%')
+      .height('100%')
+      .onDidScroll(() => {
+        this.canScrollDown = !this.scroller.isAtEnd()
+      })
 
-  @Builder
-  SendChat(text: string) {
-    Stack({ alignContent: Alignment.End }) {
-      Text(text)
-        .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 12 })
-        .padding({
-          left: 20,
-          right: 20,
-          top: 8,
-          bottom: 8
-        })
-        .margin({ bottom: 10 })
-        .backgroundColor($r('[common].color.container'))
+      if (this.canScrollDown) {
+        Image($r('[common].media.ic_arrow_down'))
+          .width(36)
+          .height(36)
+          .margin({ bottom: 24 })
+          .backgroundColor($r('[common].color.pop_container'))
+          .fillColor($r('[common].color.icon'))
+          .borderRadius(18)
+          .shadow({
+            radius: 2,
+            offsetX: 0,
+            offsetY: 5
+          })
+          .onClick(() => {
+            this.scroller.scrollEdge(Edge.Bottom)
+          })
+      }
     }.width('100%')
+    .layoutWeight(1)
   }
 
   build() {

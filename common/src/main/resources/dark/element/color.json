@@ -35,6 +35,26 @@
     {
       "name": "secondary_text",
       "value": "#A0A0A0"
+    },
+    {
+      "name": "pop_container",
+      "value": "#323232"
+    },
+    {
+      "name": "primary_text",
+      "value": "#F3F3F3"
+    },
+    {
+      "name": "tertiary_text",
+      "value": "#7A7A7A"
+    },
+    {
+      "name": "inverse_text",
+      "value": "#222222"
+    },
+    {
+      "name": "highlight",
+      "value": "#DE6068"
     }
   ]
 }

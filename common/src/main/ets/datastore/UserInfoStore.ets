@@ -25,6 +25,10 @@ export class UserInfoStore {
     return userInfoModel.data
   }
 
+  clearUserInfo() {
+    this.userInfo = undefined
+  }
+
   public static getInstance(): UserInfoStore {
     if (!UserInfoStore.instance) {
       UserInfoStore.instance = new UserInfoStore();

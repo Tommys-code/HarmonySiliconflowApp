@@ -9,6 +9,8 @@ export struct NormalButton {
   @Event click: () => void = () => {
   }
   @Param weight?: number = undefined
+  @Param wid?: Length = undefined
+  @Param hei?: Length = undefined
 
   build() {
     Button(this.text, {
@@ -24,5 +26,7 @@ export struct NormalButton {
         this.click()
       })
       .layoutWeight(this.weight)
+      .width(this.wid)
+      .height(this.hei)
   }
 }

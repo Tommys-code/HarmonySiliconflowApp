@@ -1,4 +1,4 @@
-import { UserInfoStore } from "common";
+import { ApikeyStore, UserInfoStore } from "common";
 
 @ObservedV2
 export default class SplashViewModel {
@@ -7,6 +7,9 @@ export default class SplashViewModel {
 
   constructor() {
     this.init()
+    ApikeyStore.getInstance().logoutCallBack = () => {
+      this.isLogin = false
+    }
   }
 
   async init() {

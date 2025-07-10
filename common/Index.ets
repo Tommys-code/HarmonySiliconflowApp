@@ -35,3 +35,5 @@ export { ListDataSource, ListDataSourceDataChange } from './src/main/ets/utils/L
 export { copyText } from './src/main/ets/utils/SystemUtils'
 
 export { PromptActionClass } from './src/main/ets/utils/PromptActionClass'
+
+export { navigationTitle } from './src/main/ets/view/NavigationTitle'

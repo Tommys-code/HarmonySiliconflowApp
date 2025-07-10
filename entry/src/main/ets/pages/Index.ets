@@ -8,9 +8,10 @@ import { Main } from 'main';
 @ComponentV2
 struct Index {
   @Local splash: SplashViewModel = PersistenceV2.connect(SplashViewModel, "Splash", () => new SplashViewModel())!;
+  @Provider('pageStack') pageStack: NavPathStack = new NavPathStack()
 
   build() {
-    Navigation() {
+    Navigation(this.pageStack) {
       if (this.splash.isLogin == true) {
         Main()
       } else if (this.splash.isLogin == false) {

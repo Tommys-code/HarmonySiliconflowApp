@@ -1,5 +1,5 @@
 import { ImageKnifeComponentV2 } from "@ohos/imageknife";
-import { NormalButton, Style, UserInfoStore } from "common";
+import { NormalButton, SFRoute, Style, UserInfoStore } from "common";
 import { Session } from "common/src/main/ets/db/SessionDao";
 import { getSessionListBackgroundColor } from "../utils/SessionUtils";
 import MainViewModel from "../viewmodel/MainViewModel";
@@ -8,6 +8,7 @@ import { SessionMenu } from "./dialog/SessionMenu";
 
 @ComponentV2
 export struct DrawerContent {
+  @Consumer('pageStack') pageStack: NavPathStack = new NavPathStack()
   @Param mainViewModel: MainViewModel = new MainViewModel()
   @Local dialogOptions: SessionDialogInterface = { type: DialogType.EDIT_NAME }
   private userInfo = UserInfoStore.getInstance().userInfo
@@ -143,7 +144,9 @@ export struct DrawerContent {
         })
           .width(36).height(36).margin({ right: 8 })
         Text(this.userInfo?.name)
-      }
+      }.onClick(() => {
+        this.pageStack.pushPath({ name: SFRoute.USER_INFO_PAGE })
+      })
 
       Stack().layoutWeight(1)
       Image($r('[common].media.ic_settings'))

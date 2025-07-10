@@ -1,7 +1,7 @@
 import { CommonDialog, NormalButton } from 'common'
 
 @CustomDialog
-export struct DeleteChatHistoryDialog2 {
+export struct DeleteChatHistoryDialog {
   controller: CustomDialogController
   delete?: () => void
 

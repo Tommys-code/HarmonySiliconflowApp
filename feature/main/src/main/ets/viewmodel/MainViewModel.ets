@@ -45,4 +45,10 @@ export default class MainViewModel extends ChatViewModel {
       this.selectedItem = this.sessionList
     }
   }
+
+  async batchDelete(): Promise<void> {
+    const result = super.batchDelete(this.selectedItem.map((value) => value.id))
+    this.toggleMultiSelected
+    return result
+  }
 }

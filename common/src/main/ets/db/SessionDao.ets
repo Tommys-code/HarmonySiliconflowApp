@@ -65,7 +65,7 @@ export class SessionDao extends BaseDao {
     predicates.equalTo('ID', sessionID)
     if (this.store !== undefined) {
       const num = await this.store.delete(predicates)
-      result = num >= 0
+      result = num > 0
     }
     return result
   }
@@ -79,6 +79,29 @@ export class SessionDao extends BaseDao {
       }
       this.store.update(data, predicates)
     }
+  }
+
+  async updateSessionName(sessionID: number, name: string) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    predicates.equalTo('ID', sessionID)
+    if (this.store !== undefined) {
+      const data: relationalStore.ValuesBucket = {
+        title: name
+      }
+      const result = await this.store.update(data, predicates) >= 0
+      return result
+    }
+    return false
+  }
+
+  async batchDelete(sessionIDS: number[]) {
+    if (this.store !== undefined) {
+      const placeholders = sessionIDS.map(() => '?').join(',');
+      const sql = `DELETE FROM SESSION WHERE ID IN (${placeholders})`;
+      const result = await this.store.executeSql(sql, sessionIDS)
+      return result
+    }
+    return undefined
   }
 }
 

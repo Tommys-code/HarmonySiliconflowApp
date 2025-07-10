@@ -3,12 +3,66 @@ import { NormalButton, Style, UserInfoStore } from "common";
 import { Session } from "common/src/main/ets/db/SessionDao";
 import { getSessionListBackgroundColor } from "../utils/SessionUtils";
 import MainViewModel from "../viewmodel/MainViewModel";
+import { DialogType, SessionDialog, SessionDialogInterface } from "./dialog/SessionDialog";
 import { SessionMenu } from "./dialog/SessionMenu";
 
 @ComponentV2
 export struct DrawerContent {
   @Param mainViewModel: MainViewModel = new MainViewModel()
+  @Local dialogOptions: SessionDialogInterface = { type: DialogType.EDIT_NAME }
   private userInfo = UserInfoStore.getInstance().userInfo
+  dialogController: CustomDialogController = new CustomDialogController({
+    builder: SessionDialog({
+      options: this.dialogOptions,
+      editName: this.editSessionName.bind(this),
+      delete: this.deleteSession.bind(this),
+      batchDelete: this.batchDelete.bind(this),
+    }),
+    customStyle: true
+  })
+
+  showSessionDialog(type: DialogType, session?: Session): void {
+    this.dialogOptions.type = type
+    this.dialogOptions.session = session
+    this.dialogController.open()
+  }
+
+  editSessionName(item: Session, name: string) {
+    this.mainViewModel.editSessionName(item, name).then((success) => {
+      if (success) {
+        this.showToast($r('[common].string.edit_session_name_success'))
+      } else {
+        this.showToast($r('[common].string.edit_session_name_error'))
+      }
+    })
+  }
+
+  deleteSession(item: Session) {
+    this.mainViewModel.deleteSession(item).then((success) => {
+      if (success) {
+        this.showToast($r('[common].string.delete_success'))
+      } else {
+        this.showToast($r('[common].string.delete_error'))
+      }
+    })
+  }
+
+  batchDelete() {
+    this.mainViewModel.batchDelete().then(() => {
+      this.showToast($r('[common].string.delete_success'))
+    }).catch(() => {
+      this.showToast($r('[common].string.delete_error'))
+    })
+  }
+
+  private showToast(msg: string | Resource) {
+    this.getUIContext().getPromptAction().showToast({ message: msg })
+  }
+
+  private toggleMultiSelected(current: Session): void {
+    this.mainViewModel.toggleMultiSelected()
+    this.mainViewModel.selected(current)
+  }
 
   @Builder
   NewChatButton() {
@@ -65,7 +119,9 @@ export struct DrawerContent {
         .bindContextMenu(
           SessionMenu({
             multiAble: this.mainViewModel.multiSelect,
-            multiSelect: this.mainViewModel.toggleMultiSelected
+            multiSelect: () => this.toggleMultiSelected(item),
+            editName: () => this.showSessionDialog(DialogType.EDIT_NAME, item),
+            delete: () => this.showSessionDialog(DialogType.DELETE, item)
           }),
           ResponseType.LongPress
         )
@@ -135,6 +191,7 @@ export struct DrawerContent {
         textColor: $r('[common].color.white'),
         color: $r('[common].color.highlight'),
         enable: this.mainViewModel.selectedItem.length > 0,
+        click: () => this.showSessionDialog(DialogType.BATCH_DELETE)
       }).height(32)
     }.width('100%')
     .height(40)

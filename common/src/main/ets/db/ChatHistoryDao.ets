@@ -112,6 +112,22 @@ export class ChatHistoryDao extends BaseDao {
     }
     return undefined
   }
+
+  async deleteChatHistoryBySessionID(sessionID: number) {
+    const predicates = new relationalStore.RdbPredicates(this.tableName);
+    predicates.equalTo('sessionId', sessionID)
+    if (this.store !== undefined) {
+      this.store.delete(predicates)
+    }
+  }
+
+  async batchDelete(sessionIDs: number[]) {
+    if (this.store !== undefined) {
+      const placeholders = sessionIDs.map(() => '?').join(',');
+      const sql = `DELETE FROM ChatHistory WHERE sessionId IN (${placeholders})`;
+      await this.store.executeSql(sql, sessionIDs)
+    }
+  }
 }
 
 export interface ChatHistory {

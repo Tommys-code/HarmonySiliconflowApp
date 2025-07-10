@@ -8,6 +8,7 @@ export function SessionMenu(options: SessionMenuInterface) {
       MenuItem({ content: $r('[common].string.edit_session_name') }).width('100%')
         .onClick(options.editName)
       MenuItem({ content: $r('[common].string.delete') }).width('100%')
+        .contentFontColor($r('[common].color.highlight'))
         .onClick(options.delete)
     }.width(120)
     .alignItems(HorizontalAlign.Start)

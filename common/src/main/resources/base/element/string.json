@@ -83,6 +83,10 @@
     {
       "name": "delete_with_num",
       "value": "删除 (%d)"
+    },
+    {
+      "name": "delete_session_tips",
+      "value": "该内容删除后无法恢复"
     }
   ]
 }

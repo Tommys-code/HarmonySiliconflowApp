@@ -1,4 +1,4 @@
-import { AppDataBase, DeltaModel, ListDataSource, logger, Role, SiliconFlowService, UserInfoStore } from 'common'
+import { AppDataBase, DeltaModel, ListDataSource, Role, SiliconFlowService, UserInfoStore } from 'common'
 import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao'
 import { Session } from 'common/src/main/ets/db/SessionDao'
 import { ChatResult, Finish, Start, Progressing } from '../model/ChatResult'
@@ -116,6 +116,22 @@ export class ChatViewModel {
       }
     })
     return success
+  }
+
+  async editSessionName(session: Session, name: string) {
+    return await this.appDataBase.sessionDao.updateSessionName(session.id, name)
+  }
+
+  async deleteSession(session: Session) {
+    const success = await this.appDataBase.sessionDao.deleteSession(session.id)
+    this.appDataBase.chatHistoryDao.deleteChatHistoryBySessionID(session.id)
+    return success
+  }
+
+  async batchDelete(sessionID: number[]) {
+    const result = this.appDataBase.sessionDao.batchDelete(sessionID)
+    this.appDataBase.chatHistoryDao.batchDelete(sessionID)
+    return result
   }
 
   onCleared() {

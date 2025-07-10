@@ -3,7 +3,7 @@ import { copyText, Style, ThreeDotLoading } from "common"
 import { ChatHistory } from "common/src/main/ets/db/ChatHistoryDao"
 import { ChatResult, Finish, Progressing, Start } from "../model/ChatResult"
 import { ChatMenu, ChatMenuInterface } from "./dialog/ChatMenu"
-import { DeleteChatHistoryDialog2, } from "./dialog/MainDialog"
+import { DeleteChatHistoryDialog, } from "./dialog/DeleteChatHistoryDialog"
 import MainViewModel from "../viewmodel/MainViewModel"
 
 @ComponentV2
@@ -79,7 +79,7 @@ export struct ChatItem {
   @Param @Once data?: ChatHistory = undefined
   @Param mainViewModel: MainViewModel = new MainViewModel()
   dialogController: CustomDialogController = new CustomDialogController({
-    builder: DeleteChatHistoryDialog2({ delete: this.delete.bind(this) }),
+    builder: DeleteChatHistoryDialog({ delete: this.delete.bind(this) }),
     customStyle: true
   })
 

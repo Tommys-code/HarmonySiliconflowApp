@@ -1,27 +1,92 @@
 import { preferences } from '@kit.ArkData'
+import { AbilityContext } from '../utils/AbilityContext';
+import { ConfigurationConstant } from '@kit.AbilityKit';
+import { i18n } from '@kit.LocalizationKit';
 
 export const SETTING_STORE_FILE: string = "setting"
 
-const API_KEY_NAME = "api_key"
+const FOLLOW_SYSTEM_THEME = 'follow_system_theme'
+const DARK_MODE = "dark_mode"
+const LANGUAGE_KEY = "language"
 
-class SettingDataStore {
-  store: preferences.Preferences
+export class SettingDataStore {
+  private static instance: SettingDataStore;
+  private store: preferences.Preferences
+  settingOptions: SettingOptions
 
-  constructor() {
-    this.store = preferences.getPreferencesSync(getContext(), { name: SETTING_STORE_FILE })
-    const apiKey = this.store.getSync(API_KEY_NAME, null)
-    if (apiKey) {
-      AppStorage.setOrCreate(API_KEY_NAME, apiKey)
+  private constructor() {
+    this.store = preferences.getPreferencesSync(AbilityContext.getAbilityContext(), { name: SETTING_STORE_FILE })
+    const useSystemTheme = this.store.getSync(FOLLOW_SYSTEM_THEME, true) as boolean
+    const isDarkMode = this.store.getSync(DARK_MODE, false) as boolean
+    const language = this.store.getSync(LANGUAGE_KEY, Language.SYSTEM) as Language
+    this.settingOptions = {
+      useSystemTheme: useSystemTheme,
+      isDarkMode: isDarkMode,
+      language: language,
     }
   }
 
-  getApiKey() {
-    return AppStorage.get<string>(API_KEY_NAME)
+  init() {
+    AbilityContext.getAbilityContext().getApplicationContext().setColorMode(getColorMode(this.settingOptions))
+    AbilityContext.getAbilityContext().getApplicationContext().setLanguage(getLanguage(this.settingOptions))
   }
 
-  async saveApiKey(key: string) {
-    AppStorage.setOrCreate(API_KEY_NAME, key)
-    await this.store.put(API_KEY_NAME, key)
-    await this.store.flush()
+  changeTheme(isDark?: boolean) {
+    if (isDark != undefined) {
+      this.store.put(DARK_MODE, isDark)
+      this.store.flush()
+      this.settingOptions.isDarkMode = isDark
+      AbilityContext.getAbilityContext().getApplicationContext().setColorMode(getColorMode(this.settingOptions))
+    } else {
+      const useSystemTheme = !this.settingOptions.useSystemTheme
+      this.store.put(FOLLOW_SYSTEM_THEME, useSystemTheme)
+      this.store.flush()
+      this.settingOptions.useSystemTheme = useSystemTheme
+      AbilityContext.getAbilityContext().getApplicationContext().setColorMode(getColorMode(this.settingOptions))
+    }
+  }
+
+  changeLanguage(language: Language) {
+    if (language !== this.settingOptions.language) {
+      this.store.put(LANGUAGE_KEY, language)
+      this.store.flush()
+      this.settingOptions.language = language
+      AbilityContext.getAbilityContext().getApplicationContext().setLanguage(getLanguage(this.settingOptions))
+    }
+  }
+
+  public static getInstance(): SettingDataStore {
+    if (!SettingDataStore.instance) {
+      SettingDataStore.instance = new SettingDataStore();
+    }
+    return SettingDataStore.instance;
+  }
+}
+
+export interface SettingOptions {
+  useSystemTheme: boolean
+  isDarkMode: boolean
+  language: Language
+}
+
+export enum Language {
+  SYSTEM = 'default',
+  CHINESE = 'zh',
+  ENGLISH = 'en',
+}
+
+function getColorMode(settingOptions: SettingOptions) {
+  return settingOptions.useSystemTheme
+    ? ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET
+    : (settingOptions.isDarkMode
+      ? ConfigurationConstant.ColorMode.COLOR_MODE_DARK
+      : ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT);
+}
+
+function getLanguage(settingOptions: SettingOptions): string {
+  if (settingOptions.language === Language.SYSTEM) {
+    return i18n.System.getSystemLanguage()
+  } else {
+    return settingOptions.language
   }
 }

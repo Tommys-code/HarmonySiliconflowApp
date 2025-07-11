@@ -10,87 +10,87 @@
     },
     {
       "name": "confirm",
-      "value": "确定"
+      "value": "OK"
     },
     {
       "name": "enter_question",
-      "value": "请输入问题"
+      "value": "Please enter your question"
     },
     {
       "name": "create_new_session",
-      "value": "新建对话"
+      "value": "New Chat"
     },
     {
       "name": "copy",
-      "value": "复制"
+      "value": "Copy"
     },
     {
       "name": "delete",
-      "value": "删除"
+      "value": "Delete"
     },
     {
       "name": "finish",
-      "value": "完成"
+      "value": "Complete"
     },
     {
       "name": "copy_success",
-      "value": "已复制到剪贴板"
+      "value": "Copied to clipboard"
     },
     {
       "name": "delete_dialog_title",
-      "value": "确认删除"
+      "value": "Confirm to Delete"
     },
     {
       "name": "delete_chat_tips",
-      "value": "该操作会同时删除提问和回答，且内容删除后无法恢复"
+      "value": "This operation will delete both the question and the answer, and the content cannot be recovered after deletion"
     },
     {
       "name": "cancel",
-      "value": "取消"
+      "value": "Cancel"
     },
     {
       "name": "delete_success",
-      "value": "删除成功"
+      "value": "Deleted successful"
     },
     {
       "name": "delete_error",
-      "value": "删除失败"
+      "value": "Deleted failed"
     },
     {
       "name": "mul_select",
-      "value": "多选"
+      "value": "Multi-select"
     },
     {
       "name": "edit_session_name",
-      "value": "编辑名称"
+      "value": "Edit Name"
     },
     {
       "name": "edit_session_name_tips",
-      "value": "请输入对话名称"
+      "value": "Enter a chat name"
     },
     {
       "name": "edit_session_name_success",
-      "value": "修改成功"
+      "value": "Edited successful"
     },
     {
       "name": "edit_session_name_error",
-      "value": "修改失败"
+      "value": "Edited failed"
     },
     {
       "name": "select_all",
-      "value": "全选"
+      "value": "All"
     },
     {
       "name": "delete_with_num",
-      "value": "删除 (%d)"
+      "value": "Delete (%d)"
     },
     {
       "name": "delete_session_tips",
-      "value": "该内容删除后无法恢复"
+      "value": "This chat cannot be restored after deletion"
     },
     {
       "name": "personal_info_title",
-      "value": "个人信息"
+      "value": "Personal information"
     },
     {
       "name": "id",
@@ -98,59 +98,59 @@
     },
     {
       "name": "total_balance",
-      "value": "总余额"
+      "value": "Total balance"
     },
     {
       "name": "charge_balance",
-      "value": "充值余额"
+      "value": "Recharge balance"
     },
     {
       "name": "gift_balance",
-      "value": "赠送余额"
+      "value": "Gift balance"
     },
     {
       "name": "api_key",
-      "value": "API密钥"
+      "value": "API Key"
     },
     {
       "name": "logout",
-      "value": "退出登录"
+      "value": "Log out"
     },
     {
       "name": "setting",
-      "value": "设置"
+      "value": "Settings"
     },
     {
       "name": "setting_language",
-      "value": "语言设置"
+      "value": "Language"
     },
     {
       "name": "language_default",
-      "value": "跟随系统"
+      "value": "Use System Settings"
     },
     {
       "name": "language_default_tips",
-      "value": "仅支持简体中文、英文"
+      "value": "Only simplified Chinese and English are supported"
     },
     {
       "name": "setting_theme",
-      "value": "主题设置"
+      "value": "Theme"
     },
     {
       "name": "theme_default_tips",
-      "value": "开启后将会跟随系统打开或关闭深色模式"
+      "value": "When enabled, the dark mode will follow system settings."
     },
     {
       "name": "setting_manual",
-      "value": "手动设置"
+      "value": "Manual Setting"
     },
     {
       "name": "light_theme",
-      "value": "浅色模式"
+      "value": "Light Mode"
     },
     {
       "name": "dark_theme",
-      "value": "深色模式"
+      "value": "Dark Mode"
     },
     {
       "name": "language_zh",

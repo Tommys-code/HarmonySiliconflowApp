@@ -4,6 +4,8 @@ export { ApikeyStore } from './src/main/ets/datastore/ApikeyStore';
 
 export { UserInfoStore } from './src/main/ets/datastore/UserInfoStore';
 
+export { SettingDataStore, SettingOptions, Language } from './src/main/ets/datastore/SettingDataStore';
+
 export { sfHttp } from './src/main/ets/network/SiliconFlowHttp';
 
 export { SiliconFlowService } from './src/main/ets/network/SiliconFlowService'

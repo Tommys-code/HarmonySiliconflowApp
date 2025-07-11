@@ -153,6 +153,9 @@ export struct DrawerContent {
         .width(36)
         .height(36)
         .fillColor($r('[common].color.icon'))
+        .onClick(() => {
+          this.pageStack.pushPath({ name: SFRoute.SETTING_PAGE })
+        })
     }.width('100%')
     .height(40)
     .padding({ left: 12, right: 12 })

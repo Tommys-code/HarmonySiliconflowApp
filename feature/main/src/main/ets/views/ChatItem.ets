@@ -68,7 +68,11 @@ struct Receive {
 
   build() {
     MarkdownV2({
-      content: this.data?.trim()
+      content: this.data?.trim(),
+      fontStyle: {
+        // fontColor: $r('[common].color.primary_text')
+        fontColor:$r('sys.color.ohos_id_color_text_primary')
+      },
     }).width('100%')
       .margin({ bottom: 10 })
   }

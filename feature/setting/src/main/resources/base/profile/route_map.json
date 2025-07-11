@@ -7,6 +7,30 @@
       "data": {
         "description": "UserInfoPage"
       }
+    },
+    {
+      "name": "SettingPage",
+      "pageSourceFile": "src/main/ets/pages/SettingPage.ets",
+      "buildFunction": "SettingPageBuilder",
+      "data": {
+        "description": "SettingPage"
+      }
+    },
+    {
+      "name": "ThemePage",
+      "pageSourceFile": "src/main/ets/pages/ThemePage.ets",
+      "buildFunction": "ThemePageBuilder",
+      "data": {
+        "description": "ThemePage"
+      }
+    },
+    {
+      "name": "LanguageSettingPage",
+      "pageSourceFile": "src/main/ets/pages/LanguageSettingPage.ets",
+      "buildFunction": "LanguageSettingPageBuilder",
+      "data": {
+        "description": "LanguageSettingPage"
+      }
     }
   ]
 }

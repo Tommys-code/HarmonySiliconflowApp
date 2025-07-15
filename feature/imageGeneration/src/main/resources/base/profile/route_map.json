@@ -1,0 +1,12 @@
+{
+  "routerMap": [
+    {
+      "name": "ImageCreationPage",
+      "pageSourceFile": "src/main/ets/pages/ImageCreationPage.ets",
+      "buildFunction": "ImageCreationPageBuilder",
+      "data": {
+        "description": "ImageCreationPage"
+      }
+    }
+  ]
+}

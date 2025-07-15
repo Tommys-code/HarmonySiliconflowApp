@@ -85,6 +85,18 @@
           ]
         }
       ]
+    },
+    {
+      "name": "imageGeneration",
+      "srcPath": "./feature/imageGeneration",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }

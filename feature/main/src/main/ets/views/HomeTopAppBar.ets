@@ -1,9 +1,12 @@
 import { ImageStyle, ModelStore, SFRoute, TextAIModel } from "common";
+import MainViewModel from "../viewmodel/MainViewModel";
+import { NewChatMenu } from "./dialog/NewChatMenu";
 
 @ComponentV2
 export struct HomeTopAppBar {
   @Consumer('pageStack') pageStack: NavPathStack = new NavPathStack()
   @Local currentModel: TextAIModel = ModelStore.getInstance().getCurrentModel()
+  @Param viewModel: MainViewModel = new MainViewModel()
   @Event toggleDrawer: () => void = () => {
   };
 
@@ -41,6 +44,10 @@ export struct HomeTopAppBar {
       this.Title()
       Image($r('[common].media.ic_circle_add'))
         .attributeModifier(ImageStyle.Normal)
+        .bindMenu(NewChatMenu({
+          newChat: () => this.viewModel.newChat(),
+          newImageCreation: () => this.pageStack.pushPath({ name: SFRoute.IMAGE_CREATION_PAGE })
+        }))
     }
     .height(64)
     .width('100%')

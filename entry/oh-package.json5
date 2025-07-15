@@ -9,7 +9,8 @@
     "common": "file:../common",
     "main": "file:../feature/main",
     "setting": "file:../feature/setting",
-    "model": "file:../feature/model"
+    "model": "file:../feature/model",
+    "imagegeneration": "file:../feature/imageGeneration"
   }
 }
 

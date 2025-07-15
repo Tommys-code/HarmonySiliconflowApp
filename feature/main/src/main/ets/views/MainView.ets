@@ -116,7 +116,7 @@ export struct MainView {
 
   build() {
     Column() {
-      HomeTopAppBar({ toggleDrawer: this.mainViewModel.toggleDrawer })
+      HomeTopAppBar({ toggleDrawer: this.mainViewModel.toggleDrawer, viewModel: this.mainViewModel })
       this.ChatList()
       this.ChatView()
     }

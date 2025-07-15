@@ -4,4 +4,5 @@ export class SFRoute {
   static THEME_PAGE = "ThemePage"
   static LANGUAGE_SETTING_PAGE = "LanguageSettingPage"
   static MODEL_LIST_PAGE = "ModelListPage"
+  static IMAGE_CREATION_PAGE = "ImageCreationPage"
 }

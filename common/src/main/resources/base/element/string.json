@@ -159,6 +159,14 @@
     {
       "name": "language_en",
       "value": "English"
+    },
+    {
+      "name": "image_creation_title",
+      "value": "AI生图"
+    },
+    {
+      "name": "create_new_image",
+      "value": "图像生成"
     }
   ]
 }

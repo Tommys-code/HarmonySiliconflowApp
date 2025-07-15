@@ -1,5 +1,5 @@
 import { ImageKnifeComponentV2 } from "@ohos/imageknife";
-import { NormalButton, SFRoute, Style, UserInfoStore } from "common";
+import { ImageStyle, NormalButton, SFRoute, Style, UserInfoStore } from "common";
 import { Session } from "common/src/main/ets/db/SessionDao";
 import { getSessionListBackgroundColor } from "../utils/SessionUtils";
 import MainViewModel from "../viewmodel/MainViewModel";
@@ -70,8 +70,7 @@ export struct DrawerContent {
     Stack() {
       Button({ type: ButtonType.ROUNDED_RECTANGLE }) {
         Row({ space: 10 }) {
-          Image($r('[common].media.ic_circle_add')).width(24).height(24)
-            .fillColor($r('[common].color.icon'))
+          Image($r('[common].media.ic_circle_add')).attributeModifier(ImageStyle.Small)
           Text($r('[common].string.create_new_session')).fontSize(15)
         }
       }
@@ -150,9 +149,7 @@ export struct DrawerContent {
 
       Stack().layoutWeight(1)
       Image($r('[common].media.ic_settings'))
-        .width(36)
-        .height(36)
-        .fillColor($r('[common].color.icon'))
+        .attributeModifier(ImageStyle.Normal)
         .onClick(() => {
           this.pageStack.pushPath({ name: SFRoute.SETTING_PAGE })
         })

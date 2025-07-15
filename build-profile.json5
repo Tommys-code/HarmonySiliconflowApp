@@ -73,6 +73,18 @@
           ]
         }
       ]
+    },
+    {
+      "name": "model",
+      "srcPath": "./feature/model",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
     }
   ]
 }

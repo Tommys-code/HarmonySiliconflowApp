@@ -2,6 +2,7 @@ import { preferences } from '@kit.ArkData'
 import { AbilityContext } from '../utils/AbilityContext';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { i18n } from '@kit.LocalizationKit';
+import { TextAIModel } from '../../../../Index';
 
 export const SETTING_STORE_FILE: string = "setting"
 
@@ -9,13 +10,17 @@ const FOLLOW_SYSTEM_THEME = 'follow_system_theme'
 const DARK_MODE = "dark_mode"
 const LANGUAGE_KEY = "language"
 
+const MODEL_KEY = 'model'
+const DEFAULT_MODEL = "Qwen/Qwen3-8B"
+
 export class SettingDataStore {
   private static instance: SettingDataStore;
   private store: preferences.Preferences
-  settingOptions: SettingOptions
+  readonly settingOptions: SettingOptions
 
   private constructor() {
     this.store = preferences.getPreferencesSync(AbilityContext.getAbilityContext(), { name: SETTING_STORE_FILE })
+    const textModel = this.store.getSync(MODEL_KEY, DEFAULT_MODEL) as string
     const useSystemTheme = this.store.getSync(FOLLOW_SYSTEM_THEME, true) as boolean
     const isDarkMode = this.store.getSync(DARK_MODE, false) as boolean
     const language = this.store.getSync(LANGUAGE_KEY, Language.SYSTEM) as Language
@@ -23,6 +28,7 @@ export class SettingDataStore {
       useSystemTheme: useSystemTheme,
       isDarkMode: isDarkMode,
       language: language,
+      model: textModel
     }
   }
 
@@ -55,6 +61,14 @@ export class SettingDataStore {
     }
   }
 
+  changeModel(model: TextAIModel) {
+    if (model.model !== this.settingOptions.model) {
+      this.store.put(MODEL_KEY, model.model)
+      this.store.flush()
+      this.settingOptions.model = model.model
+    }
+  }
+
   public static getInstance(): SettingDataStore {
     if (!SettingDataStore.instance) {
       SettingDataStore.instance = new SettingDataStore();
@@ -67,6 +81,7 @@ export interface SettingOptions {
   useSystemTheme: boolean
   isDarkMode: boolean
   language: Language
+  model: string
 }
 
 export enum Language {

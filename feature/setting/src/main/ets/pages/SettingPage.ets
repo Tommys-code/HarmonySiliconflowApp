@@ -10,7 +10,8 @@ struct SettingPage {
       Text(title).attributeModifier(Style.TitleMedium)
       Blank().layoutWeight(1)
       Text(content).fontColor($r('[common].color.tertiary_text'))
-      Image($r('[common].media.ic_arrow_forward')).width(12).height(12).margin({ left: 8 })
+      Image($r('[common].media.ic_arrow_forward'))
+        .width(12).height(12).margin({ left: 8 })
         .fillColor($r('[common].color.tertiary_text'))
     }.width('100%')
     .padding({

@@ -2,7 +2,7 @@ import MainViewModel from '../viewmodel/MainViewModel';
 import { HomeTopAppBar } from './HomeTopAppBar'
 import { inputMethod } from '@kit.IMEKit';
 import { ChatHistory, getChatHistoryKey } from 'common/src/main/ets/db/ChatHistoryDao';
-import { ListDataSourceDataChange } from 'common';
+import { ImageStyle, ListDataSourceDataChange } from 'common';
 import { Answer, ChatItem } from './ChatItem';
 
 @ComponentV2
@@ -97,11 +97,9 @@ export struct MainView {
 
       if (this.canScrollDown) {
         Image($r('[common].media.ic_arrow_down'))
-          .width(36)
-          .height(36)
+          .attributeModifier(ImageStyle.Normal)
           .margin({ bottom: 24 })
           .backgroundColor($r('[common].color.pop_container'))
-          .fillColor($r('[common].color.icon'))
           .borderRadius(18)
           .shadow({
             radius: 2,

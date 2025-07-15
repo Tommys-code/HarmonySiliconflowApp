@@ -124,8 +124,9 @@ class SiliconFlowHttp {
         try {
           progress(JSON.parse(line) as T)
         } catch (e) {
-          logger.error(line)
           logger.error(e)
+          promptAction.showToast({ message: e.message || '网络错误' })
+          finish?.()
         }
       }
     }

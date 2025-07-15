@@ -1,3 +1,5 @@
+import { ImageStyle } from "common"
+
 @Builder
 export function ChatMenu(item?: ChatMenuInterface) {
   Column() {
@@ -12,7 +14,7 @@ export function ChatMenu(item?: ChatMenuInterface) {
 @Builder
 function MyMenu(image: ResourceStr, text: ResourceStr, event?: (event: ClickEvent) => void) {
   Row() {
-    Image(image).width(24).height(24).fillColor($r('[common].color.icon'))
+    Image(image).attributeModifier(ImageStyle.Small)
       .margin({ right: 10 })
     Text(text)
   }

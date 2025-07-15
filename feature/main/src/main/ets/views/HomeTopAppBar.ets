@@ -1,5 +1,9 @@
+import { ImageStyle, ModelStore, SFRoute, TextAIModel } from "common";
+
 @ComponentV2
 export struct HomeTopAppBar {
+  @Consumer('pageStack') pageStack: NavPathStack = new NavPathStack()
+  @Local currentModel: TextAIModel = ModelStore.getInstance().getCurrentModel()
   @Event toggleDrawer: () => void = () => {
   };
 
@@ -7,25 +11,36 @@ export struct HomeTopAppBar {
   Title() {
     Stack({ alignContent: Alignment.Center }) {
       Row() {
-
-      }.layoutWeight(1)
+        Text(this.currentModel.model)
+          .textAlign(TextAlign.Center)
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .ellipsisMode(EllipsisMode.END)
+          .constraintSize({
+            maxWidth: 200
+          })
+        Image($r('[common].media.ic_drop_down'))
+          .attributeModifier(ImageStyle.Small)
+      }.onClick(() => {
+        this.pageStack.pushPath({
+          name: SFRoute.MODEL_LIST_PAGE, onPop: (data) => {
+            this.currentModel = data.result as TextAIModel
+          }
+        })
+      })
     }.layoutWeight(1)
   }
 
   build() {
     Row() {
       Image($r('[common].media.ic_dehaze'))
-        .height(36)
-        .width(36)
-        .fillColor($r('[common].color.icon'))
+        .attributeModifier(ImageStyle.Normal)
         .onClick(() => {
           this.toggleDrawer()
         })
       this.Title()
       Image($r('[common].media.ic_circle_add'))
-        .height(36)
-        .width(36)
-        .fillColor($r('[common].color.icon'))
+        .attributeModifier(ImageStyle.Normal)
     }
     .height(64)
     .width('100%')

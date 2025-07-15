@@ -1,0 +1,12 @@
+{
+  "routerMap": [
+    {
+      "name": "ModelListPage",
+      "pageSourceFile": "src/main/ets/pages/ModelListPage.ets",
+      "buildFunction": "ModelListPageBuilder",
+      "data": {
+        "description": "ModelListPage"
+      }
+    }
+  ]
+}

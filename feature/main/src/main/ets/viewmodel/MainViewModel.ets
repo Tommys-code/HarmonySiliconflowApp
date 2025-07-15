@@ -7,6 +7,7 @@ export default class MainViewModel extends ChatViewModel {
   @Trace question: string = ''
   @Trace multiSelect: boolean = false
   @Trace selectedItem: Session[] = []
+
   toggleDrawer = () => {
     this.showSideBar = !this.showSideBar
     this.multiSelect = false

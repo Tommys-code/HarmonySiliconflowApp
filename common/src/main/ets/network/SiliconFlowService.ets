@@ -1,4 +1,4 @@
-import { sfHttp } from '../../../../Index'
+import { ModelStore, sfHttp, TextAIModel } from '../../../../Index'
 import { ChatRequest, ChatResponseModel, MessageModel } from '../models/ChatResponseModel'
 import { UserInfoModel } from '../models/UserInfoModel'
 
@@ -24,9 +24,9 @@ export class SiliconFlowService {
     finish?: () => void,
   ) {
     const request: ChatRequest = {
-      model: "Qwen/Qwen3-8B",
+      model: ModelStore.getInstance().getCurrentModel().model,
       messages: msgs,
-      max_tokens: 8192,
+      max_tokens: ModelStore.getInstance().getCurrentModel().max_tokens,
       stream: true,
     }
 
@@ -34,7 +34,7 @@ export class SiliconFlowService {
       SiliconFlowService.CHAT_URL,
       request,
       onData,
-      finish
+      finish,
     )
   }
 }

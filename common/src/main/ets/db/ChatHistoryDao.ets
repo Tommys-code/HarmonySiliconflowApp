@@ -20,12 +20,8 @@ export class ChatHistoryDao extends BaseDao {
     'thinking TEXT' +
     ')'
 
-  initDao(store: relationalStore.RdbStore) {
-    if (store.version === 0) {
-      store.executeSql(ChatHistoryDao.SQL_CREATE_CHAT_HISTORY_TABLE).catch((e: BusinessError) => {
-        logger.error(e.message)
-      })
-    }
+  async initDao(store: relationalStore.RdbStore) {
+    return await store.executeSql(ChatHistoryDao.SQL_CREATE_CHAT_HISTORY_TABLE)
   }
 
   onDataChange(sessionId: number, callback: (sessions: ChatHistory[]) => void) {

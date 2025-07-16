@@ -1,6 +1,6 @@
 import { AppDataBase, DeltaModel, ListDataSource, Role, SiliconFlowService, UserInfoStore } from 'common'
 import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao'
-import { Session } from 'common/src/main/ets/db/SessionDao'
+import { Session, SessionType } from 'common/src/main/ets/db/SessionDao'
 import { ChatResult, Finish, Start, Progressing } from '../model/ChatResult'
 
 @ObservedV2
@@ -97,7 +97,8 @@ export class ChatViewModel {
       this.appDataBase.sessionDao.updateSessionTime(this.currentSessionID)
     }
     const sessionID =
-      this.currentSessionID ?? await this.appDataBase.sessionDao.insert(data, this.userInfoStore.userInfo?.id)
+      this.currentSessionID ??
+        await this.appDataBase.sessionDao.insert(data, SessionType.CHAT, this.userInfoStore.userInfo?.id)
     const history: ChatHistory = {
       id: -1,
       sessionId: sessionID ?? -1,

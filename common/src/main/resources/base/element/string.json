@@ -167,6 +167,14 @@
     {
       "name": "create_new_image",
       "value": "图像生成"
+    },
+    {
+      "name": "image_creation_hilt",
+      "value": "说说你的灵感..."
+    },
+    {
+      "name": "ratio",
+      "value": "比例 %s"
     }
   ]
 }

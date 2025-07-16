@@ -3,6 +3,7 @@ import { AbilityContext } from '../utils/AbilityContext';
 import { ConfigurationConstant } from '@kit.AbilityKit';
 import { i18n } from '@kit.LocalizationKit';
 import { TextAIModel } from '../../../../Index';
+import { ImageRatio } from '../models/ImageRatio';
 
 export const SETTING_STORE_FILE: string = "setting"
 
@@ -13,10 +14,14 @@ const LANGUAGE_KEY = "language"
 const MODEL_KEY = 'model'
 const DEFAULT_MODEL = "Qwen/Qwen3-8B"
 
+const IMAGE_RATIO = "image_ratio"
+const BATCH_SIZE = "batch_size"
+
 export class SettingDataStore {
   private static instance: SettingDataStore;
   private store: preferences.Preferences
   readonly settingOptions: SettingOptions
+  readonly imageCreationOptions: ImageCreationOptions
 
   private constructor() {
     this.store = preferences.getPreferencesSync(AbilityContext.getAbilityContext(), { name: SETTING_STORE_FILE })
@@ -29,6 +34,12 @@ export class SettingDataStore {
       isDarkMode: isDarkMode,
       language: language,
       model: textModel
+    }
+    const imageRatio = this.store.getSync(IMAGE_RATIO, ImageRatio.RATIO_1_1.value) as string
+    const batchSize = this.store.getSync(BATCH_SIZE, 1) as number
+    this.imageCreationOptions = {
+      ratio: ImageRatio.fromValue(imageRatio),
+      batchSize: batchSize,
     }
   }
 
@@ -69,6 +80,14 @@ export class SettingDataStore {
     }
   }
 
+  on(observer: (key: string) => void) {
+    this.store.on('change', observer)
+  }
+
+  off(observer: (key: string) => void) {
+    this.store.off('change', observer)
+  }
+
   public static getInstance(): SettingDataStore {
     if (!SettingDataStore.instance) {
       SettingDataStore.instance = new SettingDataStore();
@@ -88,6 +107,11 @@ export enum Language {
   SYSTEM = 'default',
   CHINESE = 'zh',
   ENGLISH = 'en',
+}
+
+export interface ImageCreationOptions {
+  ratio: ImageRatio,
+  batchSize: number,
 }
 
 function getColorMode(settingOptions: SettingOptions) {

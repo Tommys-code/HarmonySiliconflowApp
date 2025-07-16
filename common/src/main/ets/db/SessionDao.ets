@@ -8,14 +8,18 @@ export class SessionDao extends BaseDao {
     '(' +
     'ID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
     'title TEXT NOT NULL, ' +
+    'sessionType TEXT, ' +
     'updateTime INTEGER, ' +
     'userID TEXT NOT NULL' +
     ')'
+  private static readonly ADD_COLUMN_TYPE = 'ALTER TABLE SESSION ADD COLUMN sessionType TEXT'
 
-  initDao(store: relationalStore.RdbStore): void {
-    if (store.version === 0) {
-      store.executeSql(SessionDao.SQL_CREATE_SESSION_TABLE)
-    }
+  async initDao(store: relationalStore.RdbStore) {
+    return await store.executeSql(SessionDao.SQL_CREATE_SESSION_TABLE)
+  }
+
+  async upgrade1() {
+    await this.store?.executeSql('ALTER TABLE SESSION ADD COLUMN sessionType TEXT')
   }
 
   onDataChange(useID: string, callback: (sessions: Session[]) => void) {
@@ -27,13 +31,14 @@ export class SessionDao extends BaseDao {
     })
   }
 
-  async insert(text: string, userId?: string) {
+  async insert(text: string, type: SessionType, userId?: string) {
     let id: number = -1
     if (this.store !== undefined) {
       const data: relationalStore.ValuesBucket = {
         title: text,
         updateTime: systemDateTime.getTime(true),
         userID: userId ?? '',
+        sessionType: type,
       }
       id = await this.store.insert(this.tableName, data)
     }
@@ -50,7 +55,8 @@ export class SessionDao extends BaseDao {
       while (resultSet.goToNextRow()) {
         const session: Session = {
           id: resultSet.getLong(resultSet.getColumnIndex('ID')),
-          title: resultSet.getString(resultSet.getColumnIndex('title'))
+          title: resultSet.getString(resultSet.getColumnIndex('title')),
+          type: stringToSessionType(resultSet.getString(resultSet.getColumnIndex('sessionType'))),
         }
         result.push(session)
       }
@@ -108,4 +114,14 @@ export class SessionDao extends BaseDao {
 export interface Session {
   id: number
   title: string
+  type: SessionType
+}
+
+export enum SessionType {
+  CHAT = 'chat',
+  IMAGE = 'image'
+}
+
+export function stringToSessionType(value: string): SessionType {
+  return Object.values(SessionType).find((type) => type === value) || SessionType.CHAT;
 }

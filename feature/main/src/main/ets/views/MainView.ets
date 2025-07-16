@@ -46,6 +46,8 @@ export struct MainView {
           this.mainViewModel.question = value
         })
         .onSubmit(() => {
+          inputMethod.getController().stopInputSession()
+          this.scroller.scrollEdge(Edge.Bottom)
           this.mainViewModel.sendData()
         })
       Button() {

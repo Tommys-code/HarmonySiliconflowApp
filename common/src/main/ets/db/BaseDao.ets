@@ -1,4 +1,5 @@
 import { relationalStore } from '@kit.ArkData'
+import { AppDataBase } from './AppDataBase';
 
 export abstract class BaseDao {
   abstract tableName: string
@@ -7,7 +8,6 @@ export abstract class BaseDao {
 
   constructor(store: relationalStore.RdbStore) {
     this.store = store;
-    this.initDao(store)
   }
 
   abstract initDao(store: relationalStore.RdbStore)
@@ -35,4 +35,10 @@ export abstract class BaseDao {
       this.store?.off('dataChange', relationalStore.SubscribeType.SUBSCRIBE_TYPE_LOCAL_DETAILS, this.observer)
     }
   }
+}
+
+export interface IRdbUpgrade {
+  doUpgrade(database: AppDataBase): Promise<void>
+
+  getVersion(): number
 }

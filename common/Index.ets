@@ -4,7 +4,10 @@ export { ApikeyStore } from './src/main/ets/datastore/ApikeyStore';
 
 export { UserInfoStore } from './src/main/ets/datastore/UserInfoStore';
 
-export { SettingDataStore, SettingOptions, Language } from './src/main/ets/datastore/SettingDataStore';
+export { SettingDataStore,
+  SettingOptions,
+  Language,
+  ImageCreationOptions } from './src/main/ets/datastore/SettingDataStore';
 
 export { sfHttp } from './src/main/ets/network/SiliconFlowHttp';
 
@@ -43,3 +46,7 @@ export { PromptActionClass } from './src/main/ets/utils/PromptActionClass'
 export { navigationTitle } from './src/main/ets/view/NavigationTitle'
 
 export { ModelStore, TextAIModel } from './src/main/ets/datastore/ModelStore'
+
+export { createImageGenerationsRequest } from './src/main/ets/models/ImageGenerationsRequest'
+
+export { ImageCreationHistory } from './src/main/ets/db/ImageCreationHistoryDao'

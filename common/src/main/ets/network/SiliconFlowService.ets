@@ -1,10 +1,13 @@
 import { ModelStore, sfHttp, TextAIModel } from '../../../../Index'
 import { ChatRequest, ChatResponseModel, MessageModel } from '../models/ChatResponseModel'
+import { ImageGenerationsRequest } from '../models/ImageGenerationsRequest'
+import { ImageGenerationsResponse } from '../models/ImageGenerationsResponse'
 import { UserInfoModel } from '../models/UserInfoModel'
 
 export class SiliconFlowService {
-  static USER_INFO_URL = "user/info"
-  static CHAT_URL = "chat/completions"
+  private static USER_INFO_URL = "user/info"
+  private static CHAT_URL = "chat/completions"
+  private static IMAGE_GENERATIONS_URL = "image/generations"
 
   static getUserInfo(apiKey: string) {
     return sfHttp.get<UserInfoModel>(
@@ -35,6 +38,13 @@ export class SiliconFlowService {
       request,
       onData,
       finish,
+    )
+  }
+
+  static imageGenerations(request: ImageGenerationsRequest) {
+    return sfHttp.post<ImageGenerationsResponse>(
+      SiliconFlowService.IMAGE_GENERATIONS_URL,
+      request,
     )
   }
 }

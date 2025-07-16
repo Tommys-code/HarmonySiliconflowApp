@@ -21,4 +21,5 @@ export class ImageStyle {
   static Normal: ImageStyleModifier = new ImageStyleModifier({ size: 36 })
   static Medium: ImageStyleModifier = new ImageStyleModifier({ size: 32 })
   static Small: ImageStyleModifier = new ImageStyleModifier({ size: 24 })
+  static Tiny: ImageStyleModifier = new ImageStyleModifier({ size: 16 })
 }

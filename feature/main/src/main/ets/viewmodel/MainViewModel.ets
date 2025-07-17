@@ -1,4 +1,4 @@
-import { Session } from 'common/src/main/ets/db/SessionDao';
+import { Session } from 'common/src/main/ets/db/entity/Session';
 import { ChatViewModel } from './ChatViewModel';
 
 @ObservedV2
@@ -7,7 +7,6 @@ export default class MainViewModel extends ChatViewModel {
   @Trace question: string = ''
   @Trace multiSelect: boolean = false
   @Trace selectedItem: Session[] = []
-
   toggleDrawer = () => {
     this.showSideBar = !this.showSideBar
     this.multiSelect = false
@@ -26,7 +25,7 @@ export default class MainViewModel extends ChatViewModel {
     this.question = ''
   }
 
-  newChat(sessionID?: number): void {
+  newChat(sessionID: number | null = null): void {
     super.changeSession(sessionID)
     this.hideDrawer()
   }
@@ -47,9 +46,9 @@ export default class MainViewModel extends ChatViewModel {
     }
   }
 
-  async batchDelete(): Promise<void> {
-    const result = super.batchDelete(this.selectedItem.map((value) => value.id))
-    this.toggleMultiSelected
+  async batchDelete(): Promise<boolean> {
+    const result = super.batchDelete(this.selectedItem.map((value) => value.id!!))
+    this.toggleMultiSelected()
     return result
   }
 }

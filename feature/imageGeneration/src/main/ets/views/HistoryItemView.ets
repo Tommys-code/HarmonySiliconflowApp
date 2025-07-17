@@ -1,5 +1,6 @@
-import { ImageCreationHistory, Style } from "common"
+import { Style } from "common"
 import { LengthMetrics } from "@kit.ArkUI"
+import { ImageCreationHistory } from "common/src/main/ets/db/entity/ImageCreationHistory";
 
 @ComponentV2
 export struct HistoryItemView {

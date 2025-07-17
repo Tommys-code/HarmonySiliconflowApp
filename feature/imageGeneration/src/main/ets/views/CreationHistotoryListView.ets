@@ -1,4 +1,5 @@
-import { ImageCreationHistory, ImageStyle } from "common";
+import { ImageStyle } from "common";
+import { ImageCreationHistory } from "common/src/main/ets/db/entity/ImageCreationHistory";
 import { ImageCreationViewModel } from "../viewmodel/ImageCreationViewModel";
 import { HistoryItemView } from "./HistoryItemView";
 

@@ -1,127 +1,91 @@
-import { relationalStore } from "@kit.ArkData";
-import { BaseDao } from "./BaseDao";
-import { systemDateTime } from "@kit.BasicServicesKit";
+import { RdbDao } from 'rdbstore'
+import { Session, SessionType } from './entity/Session'
+import { relationalStore } from '@kit.ArkData'
+import { systemDateTime } from '@kit.BasicServicesKit'
+import { BaseDao } from './BaseDao'
 
-export class SessionDao extends BaseDao {
-  tableName: string = 'SESSION'
-  private static readonly SQL_CREATE_SESSION_TABLE = 'CREATE TABLE IF NOT EXISTS SESSION ' +
-    '(' +
-    'ID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-    'title TEXT NOT NULL, ' +
-    'sessionType TEXT, ' +
-    'updateTime INTEGER, ' +
-    'userID TEXT NOT NULL' +
-    ')'
-  private static readonly ADD_COLUMN_TYPE = 'ALTER TABLE SESSION ADD COLUMN sessionType TEXT'
+export interface SessionDaoImpl {
+  insert(text: string, type: SessionType, userId?: string): Promise<number>
 
-  async initDao(store: relationalStore.RdbStore) {
-    return await store.executeSql(SessionDao.SQL_CREATE_SESSION_TABLE)
+  querySessions(userId: string): Promise<Session[]>
+
+  deleteSession(sessionIDs: number[]): Promise<boolean>
+
+  updateSessionTime(sessionID: number): Promise<number>
+
+  updateSessionName(sessionID: number, name: string): Promise<boolean>
+
+  onDataChange(useID: string, callback: (sessions: Session[]) => void): void
+
+  offDataChange(): void
+}
+
+export class SessionDao extends BaseDao implements SessionDaoImpl {
+  dao: RdbDao<Session>
+
+  constructor(dao: RdbDao<Session>) {
+    super()
+    this.dao = dao
   }
 
-  async upgrade1() {
-    await this.store?.executeSql('ALTER TABLE SESSION ADD COLUMN sessionType TEXT')
-  }
-
-  onDataChange(useID: string, callback: (sessions: Session[]) => void) {
-    this.querySessions(useID).then((data) => {
-      callback(data)
+  insert(text: string, type: SessionType, userId?: string | undefined): Promise<number> {
+    const data = new Session()
+    data.title = text
+    data.userID = userId ?? ''
+    data.sessionType = type
+    return this.dao.insert(data).finally(() => {
+      super.dataChange()
     })
-    super.onDataChangeDetail(async () => {
-      callback(await this.querySessions(useID))
+  }
+
+  async querySessions(userId: string): Promise<Session[]> {
+    const userIdProp = this.dao.getProperty('userID')
+    return this.dao.predicatesBuilder()
+      .where(userIdProp.equalTo(userId))
+      .orderByDesc(this.dao.getProperty('updateTime'))
+      .build()
+      .run()
+  }
+
+  async deleteSession(sessionIDs: number[]): Promise<boolean> {
+    const idProp = this.dao.getProperty('id')
+    const predicates = this.dao.predicatesBuilder().where(idProp.inOp(sessionIDs)).predicates
+    return await this.dao.batchDelete(predicates).finally(() => {
+      super.dataChange()
+    }) > 0
+  }
+
+  updateSessionTime(sessionID: number): Promise<number> {
+    const data = new Session()
+    data.id = sessionID
+    const values: relationalStore.ValuesBucket = {
+      'updateTime': systemDateTime.getTime(true),
+    }
+    return this.dao.updatePartial(values, data).finally(() => {
+      super.dataChange()
     })
   }
 
-  async insert(text: string, type: SessionType, userId?: string) {
-    let id: number = -1
-    if (this.store !== undefined) {
-      const data: relationalStore.ValuesBucket = {
-        title: text,
-        updateTime: systemDateTime.getTime(true),
-        userID: userId ?? '',
-        sessionType: type,
-      }
-      id = await this.store.insert(this.tableName, data)
+  async updateSessionName(sessionID: number, name: string): Promise<boolean> {
+    const data = new Session()
+    data.id = sessionID
+    const values: relationalStore.ValuesBucket = {
+      'title': name,
     }
-    return id
+    return await this.dao.updatePartial(values, data).finally(() => {
+      super.dataChange()
+    }) > 0
   }
 
-  async querySessions(useID: string) {
-    const predicates2 = new relationalStore.RdbPredicates(this.tableName);
-    predicates2.equalTo('userID', useID)
-    predicates2.orderByDesc('updateTime')
-    const result: Session[] = []
-    if (this.store !== undefined) {
-      const resultSet = await this.store.query(predicates2, ['ID', 'title'])
-      while (resultSet.goToNextRow()) {
-        const session: Session = {
-          id: resultSet.getLong(resultSet.getColumnIndex('ID')),
-          title: resultSet.getString(resultSet.getColumnIndex('title')),
-          type: stringToSessionType(resultSet.getString(resultSet.getColumnIndex('sessionType'))),
-        }
-        result.push(session)
-      }
-      resultSet.close()
+  onDataChange(useID: string, callback: (sessions: Session[]) => void): void {
+    this.querySessions(useID).then((data) => callback(data))
+    const observer = () => {
+      this.querySessions(useID).then((data) => callback(data))
     }
-    return result
+    super.addObserver(observer)
   }
 
-  async deleteSession(sessionID: number) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    let result: boolean = false
-    predicates.equalTo('ID', sessionID)
-    if (this.store !== undefined) {
-      const num = await this.store.delete(predicates)
-      result = num > 0
-    }
-    return result
+  offDataChange(): void {
+    super.removeObserver()
   }
-
-  async updateSessionTime(sessionID: number) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    predicates.equalTo('ID', sessionID)
-    if (this.store !== undefined) {
-      const data: relationalStore.ValuesBucket = {
-        updateTime: systemDateTime.getTime(true)
-      }
-      this.store.update(data, predicates)
-    }
-  }
-
-  async updateSessionName(sessionID: number, name: string) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    predicates.equalTo('ID', sessionID)
-    if (this.store !== undefined) {
-      const data: relationalStore.ValuesBucket = {
-        title: name
-      }
-      const result = await this.store.update(data, predicates) >= 0
-      return result
-    }
-    return false
-  }
-
-  async batchDelete(sessionIDS: number[]) {
-    if (this.store !== undefined) {
-      const placeholders = sessionIDS.map(() => '?').join(',');
-      const sql = `DELETE FROM SESSION WHERE ID IN (${placeholders})`;
-      const result = await this.store.executeSql(sql, sessionIDS)
-      return result
-    }
-    return undefined
-  }
-}
-
-export interface Session {
-  id: number
-  title: string
-  type: SessionType
-}
-
-export enum SessionType {
-  CHAT = 'chat',
-  IMAGE = 'image'
-}
-
-export function stringToSessionType(value: string): SessionType {
-  return Object.values(SessionType).find((type) => type === value) || SessionType.CHAT;
 }

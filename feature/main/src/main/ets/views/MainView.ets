@@ -1,9 +1,10 @@
 import MainViewModel from '../viewmodel/MainViewModel';
 import { HomeTopAppBar } from './HomeTopAppBar'
 import { inputMethod } from '@kit.IMEKit';
-import { ChatHistory, getChatHistoryKey } from 'common/src/main/ets/db/ChatHistoryDao';
 import { ImageStyle, ListDataSourceDataChange } from 'common';
 import { Answer, ChatItem } from './ChatItem';
+import { ChatHistory } from 'common/src/main/ets/db/entity/ChatHistory';
+import { getChatHistoryKey } from 'common/src/main/ets/db/ChatHistoryDao';
 
 @ComponentV2
 export struct MainView {

@@ -1,142 +1,113 @@
-import { BaseDao } from "./BaseDao";
-import { relationalStore } from "@kit.ArkData";
-import { Role } from "../models/Role";
-import { BusinessError } from "@kit.BasicServicesKit";
-import { logger } from "../utils/Logger";
-import { DeltaModel } from "../models/ChatResponseModel";
-import { util } from "@kit.ArkTS";
+import { RdbDao } from "rdbstore"
+import { DeltaModel } from "../models/ChatResponseModel"
+import { ChatHistory } from "./entity/ChatHistory"
+import { relationalStore } from "@kit.ArkData"
+import { BaseDao } from "./BaseDao"
+import { util } from "@kit.ArkTS"
 
-export class ChatHistoryDao extends BaseDao {
-  tableName: string = 'ChatHistory'
-  private static readonly SQL_CREATE_CHAT_HISTORY_TABLE = 'CREATE TABLE IF NOT EXISTS ChatHistory ' +
-    '(' +
-    'ID INTEGER PRIMARY KEY AUTOINCREMENT, ' +
-    'sessionId INTEGER, ' +
-    'send_content TEXT, ' +
-    'send_role TEXT, ' +
-    'receive_content TEXT, ' +
-    'receive_role TEXT, ' +
-    'createTime INTEGER, ' +
-    'thinking TEXT' +
-    ')'
+export interface ChatHistoryDaoImpl {
+  insert(history: ChatHistory): Promise<number>
 
-  async initDao(store: relationalStore.RdbStore) {
-    return await store.executeSql(ChatHistoryDao.SQL_CREATE_CHAT_HISTORY_TABLE)
-  }
+  queryChatHistory(sessionId: number): Promise<ChatHistory[]>
 
-  onDataChange(sessionId: number, callback: (sessions: ChatHistory[]) => void) {
-    this.queryChatHistory(sessionId).then((data) => {
-      callback(data)
-    })
-    super.onDataChangeDetail(async () => {
-      callback(await this.queryChatHistory(sessionId))
-    })
-  }
+  updateChatHistory(id: number, model: DeltaModel): Promise<number>
 
-  async insert(history: ChatHistory) {
-    let id: number = -1
-    if (this.store !== undefined) {
-      const data: relationalStore.ValuesBucket = {
-        sessionId: history.sessionId,
-        send_content: history.sendContent ?? null,
-        send_role: history.sendRole?.toString() ?? null,
-        receive_content: history.receiveContent?.toString() ?? null,
-        receive_role: history.receiveRole?.toString() ?? null,
-        thinking: history.thinking ?? null,
-      }
-      id = await this.store.insert(this.tableName, data)
-    }
-    return id
-  }
+  deleteChatHistory(id: number): Promise<boolean>
 
-  async queryChatHistory(sessionId: number) {
-    const predicates2 = new relationalStore.RdbPredicates(this.tableName);
-    predicates2.equalTo('sessionId', sessionId)
-    predicates2.orderByAsc('createTime')
-    const result: ChatHistory[] = []
-    if (this.store !== undefined) {
-      const resultSet = await this.store.query(predicates2, ['ID', 'send_content', 'receive_content', 'thinking'])
-      while (resultSet.goToNextRow()) {
-        const session: ChatHistory = {
-          id: resultSet.getLong(resultSet.getColumnIndex('ID')),
-          sessionId: sessionId,
-          sendContent: resultSet.getString(resultSet.getColumnIndex('send_content')),
-          receiveContent: resultSet.getString(resultSet.getColumnIndex('receive_content')),
-          thinking: resultSet.getString(resultSet.getColumnIndex('thinking')),
-        }
-        result.push(session)
-      }
-      resultSet.close()
-    }
-    return result
-  }
+  getCountBySessionID(sessionID: number): Promise<number>
 
-  async updateChatHistory(id: number, model: DeltaModel) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    predicates.equalTo('ID', id)
-    if (this.store !== undefined) {
-      const data: relationalStore.ValuesBucket = {
-        receive_content: model.content ?? null,
-        receive_role: model.role ?? null,
-        thinking: model.reasoning_content ?? null,
-      }
-      this.store.update(data, predicates)
-    }
-  }
+  deleteChatHistoryBySessionID(sessionID: number): Promise<number>
 
-  async deleteChatHistory(id: number) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    let result: boolean = false
-    predicates.equalTo('ID', id)
-    if (this.store !== undefined) {
-      const num = await this.store.delete(predicates)
-      result = num >= 0
-    }
-    return result
-  }
+  batchDelete(sessionIDs: number[]): Promise<number>
 
-  async getCountBySessionID(sessionID: number) {
-    if (this.store !== undefined) {
-      const sql = "SELECT COUNT(*) FROM ChatHistory WHERE sessionId = ?";
-      const resultSet = await this.store.querySql(sql, [sessionID])
-      let count = 0;
-      if (resultSet.goToFirstRow()) {
-        count = resultSet.getLong(0);
-      }
-      resultSet.close();
-      return count
-    }
-    return undefined
-  }
+  onDataChange(sessionId: number, callback: (sessions: ChatHistory[]) => void): void
 
-  async deleteChatHistoryBySessionID(sessionID: number) {
-    const predicates = new relationalStore.RdbPredicates(this.tableName);
-    predicates.equalTo('sessionId', sessionID)
-    if (this.store !== undefined) {
-      this.store.delete(predicates)
-    }
-  }
-
-  async batchDelete(sessionIDs: number[]) {
-    if (this.store !== undefined) {
-      const placeholders = sessionIDs.map(() => '?').join(',');
-      const sql = `DELETE FROM ChatHistory WHERE sessionId IN (${placeholders})`;
-      await this.store.executeSql(sql, sessionIDs)
-    }
-  }
+  offDataChange(): void
 }
 
-export interface ChatHistory {
-  id: number
-  sessionId: number
-  sendContent?: string
-  sendRole?: Role
-  receiveContent?: string
-  receiveRole?: Role
-  thinking?: string
+export class ChatHistoryDao extends BaseDao implements ChatHistoryDaoImpl {
+  dao: RdbDao<ChatHistory>
+
+  constructor(dao: RdbDao<ChatHistory>) {
+    super()
+    this.dao = dao
+  }
+
+  insert(history: ChatHistory): Promise<number> {
+    return this.dao.insert(history).finally(() => {
+      super.dataChange()
+    })
+  }
+
+  queryChatHistory(sessionId: number): Promise<ChatHistory[]> {
+    const sessionIdProp = this.dao.getProperty('sessionId')
+    return this.dao.predicatesBuilder()
+      .where(sessionIdProp.equalTo(sessionId))
+      .orderByAsc(this.dao.getProperty('createTime'))
+      .build()
+      .run()
+  }
+
+  updateChatHistory(id: number, model: DeltaModel): Promise<number> {
+    const data = new ChatHistory()
+    data.id = id
+    const values: relationalStore.ValuesBucket = {
+      receiveContent: model.content ?? null,
+      receiveRole: model.role ?? null,
+      thinking: model.reasoning_content ?? null,
+    }
+    return this.dao.updatePartial(values, data).finally(() => {
+      super.dataChange()
+    })
+  }
+
+  async deleteChatHistory(id: number): Promise<boolean> {
+    const data = new ChatHistory()
+    data.id = id
+    return await this.dao.delete(data).finally(() => {
+      super.dataChange()
+    }) > 0
+  }
+
+  async getCountBySessionID(sessionID: number): Promise<number> {
+    let count = 0;
+    const sql = "SELECT COUNT(*) FROM ChatHistory WHERE sessionId = ?"
+    const resultSet = await this.dao.queryRawSql(sql, [sessionID])
+    if (resultSet.goToFirstRow()) {
+      count = resultSet.getLong(0);
+    }
+    return count
+  }
+
+  async deleteChatHistoryBySessionID(sessionID: number): Promise<number> {
+    const sessionIDProp = this.dao.getProperty('sessionId')
+    const predicates = this.dao.predicatesBuilder().where(sessionIDProp.equalTo(sessionID)).predicates
+    return await this.dao.batchDelete(predicates).finally(() => {
+      super.dataChange()
+    })
+  }
+
+  batchDelete(sessionIDs: number[]): Promise<number> {
+    const sessionIDProp = this.dao.getProperty('sessionId')
+    const predicates = this.dao.predicatesBuilder().where(sessionIDProp.inOp(sessionIDs)).predicates
+    return this.dao.batchDelete(predicates).finally(() => {
+      super.dataChange()
+    })
+  }
+
+  onDataChange(sessionId: number, callback: (sessions: ChatHistory[]) => void): void {
+    this.queryChatHistory(sessionId).then((data) => callback(data))
+    const observer = () => {
+      this.queryChatHistory(sessionId).then((data) => callback(data))
+    }
+    super.addObserver(observer)
+  }
+
+  offDataChange(): void {
+    super.removeObserver()
+  }
 }
 
 export function getChatHistoryKey(chatHistory: ChatHistory): string {
   return util.getHash(chatHistory).toString()
 }
-

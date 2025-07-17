@@ -1,6 +1,7 @@
+import { it } from "@ohos/hypium";
 import { ImageKnifeComponentV2 } from "@ohos/imageknife";
 import { ImageStyle, ImageStyleModifier, NormalButton, SFRoute, Style, UserInfoStore } from "common";
-import { Session, SessionType } from "common/src/main/ets/db/SessionDao";
+import { Session, SessionType } from "common/src/main/ets/db/entity/Session";
 import { getSessionListBackgroundColor } from "../utils/SessionUtils";
 import MainViewModel from "../viewmodel/MainViewModel";
 import { DialogType, SessionDialog, SessionDialogInterface } from "./dialog/SessionDialog";
@@ -91,7 +92,7 @@ export struct DrawerContent {
   }
 
   private getSessionIcon(session: Session) {
-    if (session.type === SessionType.IMAGE) {
+    if (session.sessionType === SessionType.IMAGE) {
       return $r('[common].media.ic_image')
     } else {
       return $r('[common].media.ic_chat')
@@ -105,6 +106,7 @@ export struct DrawerContent {
         ListItem() {
           Row() {
             Image(this.getSessionIcon(item)).attributeModifier(new ImageStyleModifier({ size: 20 }))
+              .margin({ right: 6 })
             Text(item.title).maxLines(1).layoutWeight(1).padding({ top: 12, bottom: 12 })
             if (this.mainViewModel.multiSelect) {
               Checkbox().select(this.mainViewModel.selectedItem.includes(item))
@@ -115,13 +117,20 @@ export struct DrawerContent {
           }
           .padding({ left: 12, right: 12 })
           .width('100%')
-          .backgroundColor(getSessionListBackgroundColor(item.id, this.mainViewModel.currentSessionID))
+          .backgroundColor(getSessionListBackgroundColor(item.id!!, this.mainViewModel.currentSessionID))
           .borderRadius(10)
           .onClick(() => {
             if (this.mainViewModel.multiSelect) {
               this.mainViewModel.selected(item)
             } else {
-              this.mainViewModel.newChat(item.id)
+              switch (item.sessionType) {
+                case SessionType.CHAT:
+                  this.mainViewModel.newChat(item.id!!)
+                  break
+                case SessionType.IMAGE:
+                  this.pageStack.pushPath({ name: SFRoute.IMAGE_CREATION_PAGE, param: item.id })
+                  break
+              }
             }
           })
         }.margin({ left: 12, right: 12 })

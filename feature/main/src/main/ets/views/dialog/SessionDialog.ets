@@ -1,5 +1,5 @@
 import { CommonDialog, NormalButton } from "common"
-import { Session } from "common/src/main/ets/db/SessionDao"
+import { Session } from "common/src/main/ets/db/entity/Session"
 
 @CustomDialog
 export struct SessionDialog {

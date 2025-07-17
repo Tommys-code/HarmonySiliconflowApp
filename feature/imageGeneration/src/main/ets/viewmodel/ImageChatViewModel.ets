@@ -1,7 +1,6 @@
 import {
   AppDataBase,
   createImageGenerationsRequest,
-  ImageCreationHistory,
   ImageCreationOptions,
   SettingDataStore,
   SiliconFlowService,
@@ -14,11 +13,12 @@ import {
 } from "common";
 import { ImageGenerationsResponse } from "common/src/main/ets/models/ImageGenerationsResponse";
 import { BusinessError } from "@kit.BasicServicesKit";
-import { SessionType } from "common/src/main/ets/db/SessionDao";
+import { ImageCreationHistory } from "common/src/main/ets/db/entity/ImageCreationHistory";
+import { SessionType } from "common/src/main/ets/db/entity/Session";
 
 @ObservedV2
 export class ImageChatViewModel {
-  @Trace private currentSessionID?: number
+  @Trace private currentSessionID?: number = undefined
   private appDataBase = AppDataBase.getInstance()!!
   private userInfoStore = UserInfoStore.getInstance()
   @Trace imageOptions: ImageCreationOptions = SettingDataStore.getInstance().imageCreationOptions
@@ -34,6 +34,7 @@ export class ImageChatViewModel {
 
   constructor(sessionID?: number) {
     this.currentSessionID = sessionID
+    this.onHistoryChange(sessionID)
   }
 
   private onHistoryChange(sessionID?: number) {
@@ -63,13 +64,11 @@ export class ImageChatViewModel {
     const id =
       this.currentSessionID ??
         await this.appDataBase.sessionDao.insert(prompt, SessionType.IMAGE, this.userInfoStore.userInfo?.id)
-    const data: ImageCreationHistory = {
-      id: -1,
-      sessionId: id,
-      prompt: prompt,
-      ratio: this.imageOptions.ratio,
-      batchSize: this.imageOptions.batchSize
-    }
+    const data: ImageCreationHistory = new ImageCreationHistory()
+    data.sessionId = id
+    data.prompt = prompt
+    data.ratio = this.imageOptions.ratio
+    data.batchSize = this.imageOptions.batchSize
     this.currentSessionID = id
     return await this.appDataBase.imageCreationHistoryDao.insert(data)
   }

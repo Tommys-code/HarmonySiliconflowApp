@@ -1,15 +1,16 @@
+import { it } from '@ohos/hypium'
 import { AppDataBase, DeltaModel, ListDataSource, Role, SiliconFlowService, UserInfoStore } from 'common'
-import { ChatHistory } from 'common/src/main/ets/db/ChatHistoryDao'
-import { Session, SessionType } from 'common/src/main/ets/db/SessionDao'
+import { ChatHistory } from 'common/src/main/ets/db/entity/ChatHistory'
+import { Session, SessionType } from 'common/src/main/ets/db/entity/Session'
 import { ChatResult, Finish, Start, Progressing } from '../model/ChatResult'
 
 @ObservedV2
 export class ChatViewModel {
   private userInfoStore = UserInfoStore.getInstance()
-  private appDataBase = AppDataBase.getInstance()!!
+  private appDataBase = AppDataBase.getInstance()
   @Trace answer: ChatResult = Finish.INSTANCE
   @Trace sessionList: Array<Session> = []
-  @Trace currentSessionID?: number
+  @Trace currentSessionID: number | null = null
   chatHistory: ListDataSource<ChatHistory> = new ListDataSource()
 
   @Monitor("currentSessionID")
@@ -23,15 +24,18 @@ export class ChatViewModel {
     if (this.userInfoStore.userInfo !== undefined) {
       this.appDataBase.sessionDao.onDataChange(this.userInfoStore.userInfo?.id, (data) => {
         this.sessionList = data
-        if (this.currentSessionID === undefined) {
-          this.currentSessionID = data[0].id
+        if (this.currentSessionID === null) {
+          const id = data.find(item => item.sessionType === SessionType.CHAT)?.id
+          if (id) {
+            this.currentSessionID = id
+          }
         }
       })
     }
   }
 
   private onChatHistory(sessionID?: number) {
-    if (sessionID) {
+    if (sessionID !== undefined) {
       this.appDataBase.chatHistoryDao.offDataChange()
       this.appDataBase.chatHistoryDao.onDataChange(sessionID, (data) => {
         this.chatHistory.setNewData(data)
@@ -58,7 +62,7 @@ export class ChatViewModel {
     })
   }
 
-  changeSession(sessionID?: number) {
+  changeSession(sessionID: number | null) {
     this.currentSessionID = sessionID
   }
 
@@ -85,7 +89,7 @@ export class ChatViewModel {
     }
   }
 
-  private finish(chatID?: number) {
+  private finish(chatID: number) {
     if (this.answer instanceof Progressing && chatID) {
       this.appDataBase.chatHistoryDao.updateChatHistory(chatID, this.answer.data)
     }
@@ -93,44 +97,41 @@ export class ChatViewModel {
   }
 
   private async insertSendData(data: string) {
-    if (this.currentSessionID) {
+    if (this.currentSessionID !== null) {
       this.appDataBase.sessionDao.updateSessionTime(this.currentSessionID)
     }
-    const sessionID =
-      this.currentSessionID ??
-        await this.appDataBase.sessionDao.insert(data, SessionType.CHAT, this.userInfoStore.userInfo?.id)
-    const history: ChatHistory = {
-      id: -1,
-      sessionId: sessionID ?? -1,
-      sendContent: data,
-      sendRole: Role.USER,
-    }
+    const sessionID = this.currentSessionID !== null ? this.currentSessionID
+      : await this.appDataBase.sessionDao.insert(data, SessionType.CHAT, this.userInfoStore.userInfo?.id)
+
+    const history: ChatHistory = new ChatHistory()
+    history.sessionId = sessionID
+    history.sendContent = data
     this.currentSessionID = sessionID
     return await this.appDataBase.chatHistoryDao.insert(history)
   }
 
   async deleteChatHistory(chatHistory: ChatHistory) {
-    const success = await this.appDataBase.chatHistoryDao.deleteChatHistory(chatHistory.id)
+    const success = await this.appDataBase.chatHistoryDao.deleteChatHistory(chatHistory.id!!)
     this.appDataBase.chatHistoryDao.getCountBySessionID(chatHistory.sessionId).then((count) => {
       if (count === 0) {
-        this.appDataBase.sessionDao.deleteSession(chatHistory.sessionId)
+        this.appDataBase.sessionDao.deleteSession([chatHistory.sessionId])
       }
     })
     return success
   }
 
   async editSessionName(session: Session, name: string) {
-    return await this.appDataBase.sessionDao.updateSessionName(session.id, name)
+    return await this.appDataBase.sessionDao.updateSessionName(session.id!!, name)
   }
 
   async deleteSession(session: Session) {
-    const success = await this.appDataBase.sessionDao.deleteSession(session.id)
-    this.appDataBase.chatHistoryDao.deleteChatHistoryBySessionID(session.id)
+    const success = await this.appDataBase.sessionDao.deleteSession([session.id!!])
+    this.appDataBase.chatHistoryDao.deleteChatHistoryBySessionID(session.id!!)
     return success
   }
 
   async batchDelete(sessionID: number[]) {
-    const result = this.appDataBase.sessionDao.batchDelete(sessionID)
+    const result = this.appDataBase.sessionDao.deleteSession(sessionID)
     this.appDataBase.chatHistoryDao.batchDelete(sessionID)
     return result
   }

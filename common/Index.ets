@@ -48,5 +48,3 @@ export { navigationTitle } from './src/main/ets/view/NavigationTitle'
 export { ModelStore, TextAIModel } from './src/main/ets/datastore/ModelStore'
 
 export { createImageGenerationsRequest } from './src/main/ets/models/ImageGenerationsRequest'
-
-export { ImageCreationHistory } from './src/main/ets/db/ImageCreationHistoryDao'

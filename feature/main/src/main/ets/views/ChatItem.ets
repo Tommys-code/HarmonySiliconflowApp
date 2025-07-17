@@ -1,10 +1,10 @@
 import { MarkdownV2 } from "@lidary/markdown"
 import { copyText, Style, ThreeDotLoading } from "common"
-import { ChatHistory } from "common/src/main/ets/db/ChatHistoryDao"
 import { ChatResult, Finish, Progressing, Start } from "../model/ChatResult"
 import { ChatMenu, ChatMenuInterface } from "./dialog/ChatMenu"
 import { DeleteChatHistoryDialog, } from "./dialog/DeleteChatHistoryDialog"
 import MainViewModel from "../viewmodel/MainViewModel"
+import { ChatHistory } from "common/src/main/ets/db/entity/ChatHistory"
 
 @ComponentV2
 struct Send {
@@ -71,7 +71,7 @@ struct Receive {
       content: this.data?.trim(),
       fontStyle: {
         // fontColor: $r('[common].color.primary_text')
-        fontColor:$r('sys.color.ohos_id_color_text_primary')
+        fontColor: $r('sys.color.ohos_id_color_text_primary')
       },
     }).width('100%')
       .margin({ bottom: 10 })
@@ -120,7 +120,7 @@ export struct ChatItem {
         if (this.data?.sendContent) {
           Send({
             data: this.data.sendContent, chatMenuEvent: {
-              copy: () => this.copy(this.data?.sendContent),
+              copy: () => this.copy(this.data?.sendContent ?? undefined),
               delete: () => this.showDeleteDialog(),
             }
           })
@@ -128,14 +128,14 @@ export struct ChatItem {
         if (this.data.thinking) {
           Thinking({ data: this.data.thinking })
             .bindContextMenu(ChatMenu({
-              copy: () => this.copy(this.data?.thinking),
+              copy: () => this.copy(this.data?.thinking ?? undefined),
               delete: () => this.showDeleteDialog(),
             }), ResponseType.LongPress)
         }
         if (this.data.receiveContent) {
           Receive({ data: this.data.receiveContent })
             .bindContextMenu(ChatMenu({
-              copy: () => this.copy(this.data?.receiveContent),
+              copy: () => this.copy(this.data?.receiveContent ?? undefined),
               delete: () => this.showDeleteDialog(),
             }), ResponseType.LongPress)
         }
